@@ -1,0 +1,16 @@
+code --install-extension 2gua.rainbow-brackets
+code --install-extension batisteo.vscode-django
+code --install-extension cometeer.spacemacs
+code --install-extension donjayamanne.jupyter
+code --install-extension donjayamanne.python-extension-pack
+code --install-extension magicstack.MagicPython
+code --install-extension ms-mssql.mssql
+code --install-extension ms-python.python
+code --install-extension ms-vscode.cpptools
+code --install-extension ms-vsliveshare.vsliveshare
+code --install-extension neuron.neuron-IPE
+code --install-extension PeterJausovec.vscode-docker
+code --install-extension robertohuertasm.vscode-icons
+code --install-extension VisualStudioExptTeam.vscodeintellicode
+code --install-extension vscodevim.vim
+code --install-extension wholroyd.jinja
