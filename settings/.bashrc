@@ -76,11 +76,9 @@ alias speed='speedtest-cli --server 2406 --simple'
 alias ipe='curl ipinfo.io/ip'
 alias ipi='ipconfig getifaddr en0'
 alias c='clear'
-alias docker='sudo docker '
-alias docker-compose='sudo docker-compose '
+alias dev='~/.dev-tmux'
 
 # Custom paths and versions
-export PATH="$PATH:/home/alex/hadoop/bin"
 export PATH="$PATH:/opt/mssql-tools/bin"
-. /home/alexh/miniconda3/etc/profile.d/conda.sh
+. /home/alex/miniconda3/etc/profile.d/conda.sh
 conda activate

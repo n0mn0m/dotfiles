@@ -2,6 +2,7 @@
 sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E '%{rhel}').noarch.rpm
 sudo yum install https://$(rpm -E '%{?centos:centos}%{!?centos:rhel}%{rhel}').iuscommunity.org/ius-release.rpm
 sudo yum install yum-plugin-replace
+sudo yum install cmake gcc-c++ make python3-devel
 
 # General packages
 sudo yum upgrade
@@ -69,6 +70,10 @@ vim +PluginInstall +qall
 mv ./settings/.vimrc ~/
 vim +PluginInstall +qall
 
+pushd ~/.vim/bundle/youcompleteme
+./install.py --clang-completer
+popd
+
 # tmux
 git clone https://github.com/tmux-plugins/tmux-resurrect ~/
 mv ./settings/.tmux.conf ~/
@@ -81,6 +86,7 @@ git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
 mv ./settings/.profile ~/
 mv ./settings/.bash_profile ~/
 mv ./settings/.bashrc ~/
+mv ./settings/.dev-tmux ~/
 
 # Cleanup
 sudo yum upgrade

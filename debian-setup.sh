@@ -10,7 +10,9 @@ sudo apt-get install -yqq --no-install-recommends \
         tmux \
         ca-certificates \
         curl \
-        software-properties-common
+        software-properties-common \
+	cmake \
+	python3-devel
 
 # Adobe Source Code Pro Fonts
 ./helpers/source-font.sh
@@ -59,6 +61,10 @@ vim +PluginInstall +qall
 mv ./settings/.vimrc ~/
 vim +PluginInstall +qall
 
+pushd ~/.vim/bundle/youcompleteme
+python3 install.py --clang-completer
+popd
+
 # Spacemacs
 #git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 #mv ./settings/.spacemacs ~/.spacemacs
@@ -75,6 +81,7 @@ git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
 mv ./settings/.profile ~/
 mv ./settings/.bash_profile ~/
 mv ./settings/.bashrc ~/
+mv ./settings/.dev-tmux ~/
 
 # Cleanup
 sudo apt-get upgrade
