@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #Small shell script that launches tmux with the required programs.
-tmux new-session -d 'vim'
+tmux new -s $1 -d
+tmux new-window 'vim'
 tmux split-window -v 'ipython'
-tmux split-window -h
-tmux -2 attach-session -d
+tmux a -t $1
 
