@@ -2,7 +2,7 @@
 sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E '%{rhel}').noarch.rpm
 sudo yum install https://$(rpm -E '%{?centos:centos}%{!?centos:rhel}%{rhel}').iuscommunity.org/ius-release.rpm
 sudo yum install yum-plugin-replace
-sudo yum install cmake gcc-c++ make python36-devel
+sudo yum install cmake gcc-c++ make python36-devel ncurses-devel
 
 # General packages
 sudo yum upgrade
@@ -64,14 +64,20 @@ mv ./settings/vsicons.settings.json ~/.config/Code/User
 # mv ./settings/.spacemacs ~/.spacemacs
 
 # Vim
-git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-vim +PluginInstall +qall
-
-mv ./settings/.vimrc ~/
-vim +PluginInstall +qall
-
-pushd ~/.vim/bundle/youcompleteme
-./install.py --clang-completer
+git clone https://github.com/vim/vim.git
+pushd ~/vim/src
+./configure \
+  --disable-nls \
+  --enable-cscope \
+  --enable-gui=no \
+  --enable-multibyte  \
+  --enable-pythoninterp \
+  --enable-rubyinterp \
+  --prefix=/home/alex/.local/vim \
+  --with-features=huge  \
+  --with-python-config-dir=/usr/lib/python2.7/config \
+  --with-tlib=ncurses \
+make && make install
 popd
 
 # tmux
@@ -87,6 +93,19 @@ mv ./settings/.profile ~/
 mv ./settings/.bash_profile ~/
 mv ./settings/.bashrc ~/
 mv ./settings/.dev-tmux ~/
+
+source ~/.bashrc
+
+# Vim settings
+git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+vim +PluginInstall +qall
+
+mv ./settings/.vimrc ~/
+vim +PluginInstall +qall
+
+pushd ~/.vim/bundle/youcompleteme
+./install.py --clang-completer
+popd
 
 # Cleanup
 sudo yum upgrade
