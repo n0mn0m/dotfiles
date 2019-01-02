@@ -64,19 +64,20 @@ mv ./settings/vsicons.settings.json ~/.config/Code/User
 # mv ./settings/.spacemacs ~/.spacemacs
 
 # Vim
+# pay attention to with-python-config and make sure the directory is correct
 git clone https://github.com/vim/vim.git
 pushd ~/vim/src
-./configure \
-  --disable-nls \
-  --enable-cscope \
-  --enable-gui=no \
-  --enable-multibyte  \
-  --enable-pythoninterp \
-  --enable-rubyinterp \
-  --prefix=/home/alex/.local/vim \
-  --with-features=huge  \
-  --with-python-config-dir=/usr/lib/python2.7/config \
-  --with-tlib=ncurses \
+./configure --with-features=huge \
+--enable-multibyte \
+--enable-rubyinterp=yes \
+--enable-pythoninterp=yes \
+--with-python-config-dir=/work/adh3787/miniconda3/envs/py27/lib/python2.7/config \
+--enable-python3interp=yes \
+--with-python3-config-dir=/work/adh3787/miniconda3/lib/python3.6/config-3.6m-x86_64-linux-gnu \
+--enable-perlinterp=yes \
+--enable-luainterp=yes \
+--enable-cscope \
+--prefix=/home/ADH3787/.local/vim | grep -i python
 make && make install
 popd
 
