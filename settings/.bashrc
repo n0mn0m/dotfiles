@@ -82,3 +82,8 @@ alias mtmux='~/.dev-tmux'
 export PATH="$PATH:/opt/mssql-tools/bin"
 . /home/alex/miniconda3/etc/profile.d/conda.sh
 conda activate
+
+# Check for custom vim install
+if [ -d "$HOME/.local/vim/bin/" ] ; then
+  PATH="$HOME/.local/vim/bin/:$PATH"
+fi
