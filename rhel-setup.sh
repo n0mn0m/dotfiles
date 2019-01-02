@@ -2,7 +2,7 @@
 sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E '%{rhel}').noarch.rpm
 sudo yum install https://$(rpm -E '%{?centos:centos}%{!?centos:rhel}%{rhel}').iuscommunity.org/ius-release.rpm
 sudo yum install yum-plugin-replace
-sudo yum install cmake gcc-c++ make python3-devel
+sudo yum install cmake gcc-c++ make python36-devel
 
 # General packages
 sudo yum upgrade
