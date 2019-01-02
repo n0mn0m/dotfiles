@@ -76,7 +76,7 @@ alias speed='speedtest-cli --server 2406 --simple'
 alias ipe='curl ipinfo.io/ip'
 alias ipi='ipconfig getifaddr en0'
 alias c='clear'
-alias tmux='~/.dev-tmux'
+alias mtmux='~/.dev-tmux'
 
 # Custom paths and versions
 export PATH="$PATH:/opt/mssql-tools/bin"
