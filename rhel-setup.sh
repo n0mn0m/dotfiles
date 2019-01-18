@@ -31,6 +31,13 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 sudo systemctl enable docker
 
+# Rust
+curl https://sh.rustup.rs -sSf | sh
+source $HOME/.cargo/env
+rustup toolchain add nightly
+rustup component add rust-src
+cargo +nightly install racer
+
 # Miniconda
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
 bash ~/miniconda.sh -b -p $HOME/miniconda
@@ -71,7 +78,7 @@ mv ./settings/.vimrc ~/
 vim +PluginInstall +qall
 
 pushd ~/.vim/bundle/youcompleteme
-./install.py --clang-completer
+./install.py --clang-completer --rust-completer
 popd
 
 # tmux

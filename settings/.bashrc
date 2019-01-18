@@ -80,5 +80,7 @@ alias mtmux='~/.dev-tmux'
 
 # Custom paths and versions
 export PATH="$PATH:/opt/mssql-tools/bin"
+export PATH="/home/alex/.cargo/bin:$PATH"
+export tRUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
 . /home/alex/miniconda3/etc/profile.d/conda.sh
 conda activate
