@@ -28,6 +28,7 @@ Plugin 'prabirshrestha/async.vim'
 Plugin 'prabirshrestha/vim-lsp'
 Plugin 'rust-lang/rust.vim'
 Plugin 'plasticboy/vim-markdown'
+Plugin 'racer-rust/vim-racer'
 
 
 " All of your Plugins must be added before the following line
@@ -48,9 +49,6 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
-
-" Vim build from source backspace
-set backspace=indent,eol,start
 
 " Enable Folding
 set foldmethod=indent
