@@ -2,7 +2,7 @@
 sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E '%{rhel}').noarch.rpm
 sudo yum install https://$(rpm -E '%{?centos:centos}%{!?centos:rhel}%{rhel}').iuscommunity.org/ius-release.rpm
 sudo yum install yum-plugin-replace
-sudo yum install cmake gcc-c++ make python3-devel
+sudo yum install cmake gcc-c++ make python36-devel ncurses-devel
 
 # General packages
 sudo yum upgrade
@@ -71,6 +71,24 @@ mv ./settings/vsicons.settings.json ~/.config/Code/User
 # mv ./settings/.spacemacs ~/.spacemacs
 
 # Vim
+# pay attention to with-python-config and make sure the directory is correct
+git clone https://github.com/vim/vim.git
+pushd ~/vim/src
+./configure --with-features=huge \
+--enable-multibyte \
+--enable-rubyinterp=yes \
+--enable-pythoninterp=yes \
+--with-python-config-dir=/work/alex/miniconda3/envs/py27/lib/python2.7/config \
+--enable-python3interp=yes \
+--with-python3-config-dir=/work/alex/miniconda3/lib/python3.6/config-3.6m-x86_64-linux-gnu \
+--enable-perlinterp=yes \
+--enable-luainterp=yes \
+--enable-cscope \
+--prefix=/home/alex/.local/vim | grep -i python
+make && make install
+popd
+
+# Vim settings
 git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 vim +PluginInstall +qall
 
@@ -79,7 +97,6 @@ vim +PluginInstall +qall
 
 pushd ~/.vim/bundle/youcompleteme
 ./install.py --clang-completer --rust-completer
-popd
 
 # tmux
 git clone https://github.com/tmux-plugins/tmux-resurrect ~/
@@ -94,6 +111,8 @@ mv ./settings/.profile ~/
 mv ./settings/.bash_profile ~/
 mv ./settings/.bashrc ~/
 mv ./settings/.dev-tmux ~/
+
+source ~/.bashrc
 
 # Cleanup
 sudo yum upgrade
