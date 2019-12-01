@@ -1,0 +1,96 @@
+IMAPAccount gmail
+Host imap.gmail.com
+User alex.hagerman@gmail.com
+PassCmd "gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.mail/.gmail.gpg" 
+SSLType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore gmail-remote
+Account gmail
+
+MaildirStore gmail-local
+Path ~/.mail/gmail/
+Inbox ~/.mail/gmail/Inbox
+SubFolders Verbatim
+
+Channel gmail
+Master :gmail-remote:
+Slave :gmail-local:
+Patterns * ![Gmail]* "[Gmail]/Starred" !Spam !Junk
+Create Both
+Sync Full
+SyncState *
+Expunge Both
+
+IMAPAccount alex
+Host mail.gandi.net
+User alex@unexpectedeof.net
+PassCmd "gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.mail/.gandi.gpg" 
+SSLType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore alex-remote
+Account alex
+
+MaildirStore alex-local
+Path ~/.mail/alex/
+Inbox ~/.mail/alex/Inbox
+SubFolders Verbatim
+
+Channel alex
+Master :alex-remote:
+Slave :alex-local:
+Patterns * !Spam !Junk
+Create Both
+Sync Full
+SyncState *
+Expunge Both
+
+IMAPAccount n0mn0m
+Host mail.gandi.net
+User alexander@unexpectedeof.net
+PassCmd "gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.mail/.gandi.gpg" 
+SSLType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore n0mn0m-remote
+Account n0mn0m
+
+MaildirStore n0mn0m-local
+Path ~/.mail/n0mn0m/
+Inbox ~/.mail/n0mn0m/Inbox
+SubFolders Verbatim
+
+Channel n0mn0m
+Master :n0mn0m-remote:
+Slave :n0mn0m-local:
+Patterns * !Spam !Junk
+Create Both
+Sync Full
+SyncState *
+Expunge Both
+
+IMAPAccount outlook
+Host smtp.office365.com
+User alex.hagerman@outlook.com
+PassCmd "gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.mail/.outlook.gpg" 
+SSLType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore outlook-remote
+Account outlook
+
+MaildirStore outlook-local
+Path ~/.mail/outlook/
+Inbox ~/.mail/outlook/Inbox
+SubFolders Verbatim
+
+Channel outlook
+Master :outlook-remote:
+Slave :outlook-local:
+Patterns * !Spam !Junk
+Create Both
+Sync Full
+SyncState *
+Expunge Both
+

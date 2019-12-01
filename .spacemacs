@@ -39,26 +39,43 @@ values."
      ivy
      auto-completion
      better-defaults
-     emacs-lisp
-     git
-     markdown
-     ;; org
-     (shell :variables
-            shell-default-height 30
-            shell-default-position 'bottom)
      spell-checking
      syntax-checking
      version-control
-     (scala :variables
-            scala-auto-insert-asterisk-in-comments t
-            scala-use-unicode-arrows t
-            scala-auto-start-ensime t
-            )
+     ;; tools
+     neotree
+     git
+     org
+     ansible
+     docker
+     systemd
+     rcirc
+     (shell :variables
+            shell-default-shell 'shell
+            shell-default-term-shell "/bin/bash"
+            shell-default-height 40
+            shell-default-position 'bottom)
+     (mu4e :variables
+           mu4e-use-fancy-chars t
+           mu4e-enable-mode-line t
+           mu4e-view-show-images t
+           mu4e-view-show-addresses t
+           mu4e-display-update-status-in-modeline t)
+     (elfeed :variables
+             elfeed-enable-web-interface t
+             rmh-elfeed-org-files (list "~/.config/feed.org"))
+     ;; languages
+     markdown
+     shell-scripts
+     sql
+     yaml
+     rust
      (python :variables
-             python-test-runner 'pytest
-             python-sort-imports-on-save)
+             python-sort-imports-on-save t
+             python-fill-column 120
+             python-formatter 'black)
      (c-c++ :variables
-            c-c++-default-mode-for-headers 'c++-mode)
+            c-c++-enable-clang-support t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -100,7 +117,7 @@ values."
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
    ;; whenever you start Emacs. (default nil)
-   dotspacemacs-check-for-update t
+   dotspacemacs-check-for-update nil
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
    ;; to `emacs-version'.
@@ -143,7 +160,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 15
+                               :size 13
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -188,7 +205,7 @@ values."
    dotspacemacs-display-default-layout nil
    ;; If non nil then the last auto saved layouts are resume automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts t
+   dotspacemacs-auto-resume-layouts nil
    ;; Size (in MB) above which spacemacs will prompt to open the large file
    ;; literally to avoid performance issues. Opening a file literally means that
    ;; no major mode or minor modes are active. (default is 1)
@@ -252,6 +269,7 @@ values."
    dotspacemacs-show-transient-state-color-guide t
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
    dotspacemacs-mode-line-unicode-symbols t
+   dotspacemacs-mode-line-theme 'spacemacs
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
@@ -304,23 +322,184 @@ values."
    ))
 
 (defun dotspacemacs/user-init ()
-  "Initialization function for user code.
-It is called immediately after `dotspacemacs/init', before layer configuration
-executes.
- This function is mostly useful for variables that need to be set
-before packages are loaded. If you are unsure, you should try in setting them in
-`dotspacemacs/user-config' first."
-  (setenv "WORKON_HOME" "/home/alex/miniconda3/envs")
-  )
+)
 
 (defun dotspacemacs/user-config ()
-  "Configuration function for user code.
-This function is called at the very end of Spacemacs initialization after
-layers configuration.
-This is the place where most of your configurations should be done. Unless it is
-explicitly specified that a variable should be set before a package is loaded,
-you should place your code here."
-  )
+  (require 'mu4e)
+  (require 'smtpmail)
+  ;; This is a helper to help determine which account context I am in based 
+  ;; on the folder in my maildir the email (eg. ~/.mail/nine27) is located in.
+  (defun mu4e-message-maildir-matches (msg rx)
+    (when rx
+      (if (listp rx)
+          ;; If rx is a list, try each one for a match
+          (or (mu4e-message-maildir-matches msg (car rx))
+              (mu4e-message-maildir-matches msg (cdr rx)))
+        ;; Not a list, check rx
+        (string-match rx (mu4e-message-field msg :maildir)))))
+  ;; Choose account label to feed msmtp -a option based on From header
+  ;; in Message buffer; This function must be added to
+  ;; message-send-mail-hook for on-the-fly change of From address before
+  ;; sending message since message-send-mail-hook is processed right
+  ;; before sending message.
+  (defun choose-msmtp-account ()
+    (if (message-mail-p)
+        (save-excursion
+          (let*
+              ((from (save-restriction
+                       (message-narrow-to-headers)
+                       (message-fetch-field "from")))
+               (account
+                (cond
+                 ((string-match "alexander@unexpectedeof.net" from) "n0mn0m")
+                 ((string-match "alex@unexpectedeof.net" from) "alex")
+                 ((string-match "alex.hagerman@outlook.com" from) "outlook")
+                 ((string-match "alex.hagerman@gmail.com" from) "gmail"))))
+            (setq message-sendmail-extra-arguments (list '"-a" account))))))
+
+  ;; use mu4e for e-mail in emacs
+  (setq mail-user-agent 'mu4e-user-agent)
+  (setq message-send-mail-function 'smtpmail-send-it)
+  (setq smtpmail-stream-type 'starttls)
+  (setq user-full-name "Alexander Hagerman")
+
+  ;; mu4e Setup
+  (setq mu4e-maildir "~/.mail"
+        mu4e-get-mail-command "mbsync -a"
+        mu4e-update-interval 300
+        ;; mu4e-compose-in-new-frame t
+        mu4e-context-policy 'pick-first
+        mu4e-sent-messages-behavior 'delete
+        mu4e-html2text-command "w3m -dump -T text/html -o display_link_number=true"
+        mu4e-compose-signature (concat
+                                  "Best,\n"
+                                  "Alexander Hagerman\n"))
+
+  (add-hook 'mu4e-compose-mode-hook 'flyspell-mode)
+
+  ;; Begin mu4e Context Congiuration
+  (require 'mu4e-context)
+  (setq mu4e-contexts
+    `( ,(make-mu4e-context
+        :name "n0mn0m"
+        :enter-func (lambda () (mu4e-message "Welcome Alexander"))
+        :match-func (lambda (msg)(when msg(string-match-p "^/n0mn0m" (mu4e-message-field msg :maildir))))
+        :leave-func (lambda () (mu4e-clear-caches))
+        :vars '(
+                (user-mail-address . "alexander@unexpectedeof.net"  )
+                (mu4e-sent-folder . "/n0mn0m/Sent")
+                (mu4e-drafts-folder . "/n0mn0m/Drafts")
+                (mu4e-trash-folder . "/n0mn0m/Trash")
+                (mu4e-refile-folder . "/n0mn0m/Archive")
+                )
+        )
+       ,(make-mu4e-context
+        :name "alex"
+        :enter-func (lambda () (mu4e-message "Welcome Alex"))
+        :match-func (lambda (msg)(when msg(string-match-p "^/alex" (mu4e-message-field msg :maildir))))
+        :leave-func (lambda () (mu4e-clear-caches))
+        :vars '(
+                (user-mail-address . "alex@unexpectedeof.net"  )
+                (mu4e-sent-folder . "/alex/Sent")
+                (mu4e-drafts-folder . "/alex/Drafts")
+                (mu4e-trash-folder . "/alex/Trash")
+                (mu4e-refile-folder . "/alex/Archive")
+                )
+        )
+       ,(make-mu4e-context
+        :name "gmail"
+        :enter-func (lambda () (mu4e-message "entering gmail"))
+        :match-func (lambda (msg)(when msg(string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
+        :leave-func (lambda () (mu4e-clear-caches))
+        :vars '(
+                (user-mail-address . "alex.hagerman@gmail.com"  )
+                (mu4e-sent-folder . "/gmail/Sent")
+                (mu4e-drafts-folder . "/gmail/Drafts")
+                (mu4e-trash-folder . "/gmail/Trash")
+                (mu4e-refile-folder . "/gmail/Archive")
+                )
+        )
+       ,(make-mu4e-context
+        :name "outlook"
+        :enter-func (lambda () (mu4e-message "entering outlook"))
+        :match-func (lambda (msg)(when msg(string-match-p "^/outlook" (mu4e-message-field msg :maildir))))
+        :leave-func (lambda () (mu4e-clear-caches))
+        :vars '(
+                (user-mail-address     . "alex.hagerman@outlook.com")
+                (mu4e-sent-folder      . "/outlook/Sent")
+                (mu4e-drafts-folder    . "/outlook/Drafts")
+                (mu4e-trash-folder     . "/outlook/Trash")
+                (mu4e-refile-folder    . "/outlook/Archive")
+               )
+        )
+      )
+    )
+
+  ;; Configure sending mail.
+  (setq message-send-mail-function 'message-send-mail-with-sendmail
+        sendmail-program "/usr/bin/msmtp"
+        user-full-name "Alexander Hagerman")
+
+  ;; Use the correct account context when sending mail based on the from header.
+  (setq message-sendmail-envelope-from 'header)
+  (add-hook 'message-send-mail-hook 'choose-msmtp-account)
+  (add-hook 'message-send-hook 'mml-secure-message-sign-pgpmime)
+
+  ;; Copy and paste to system clipboard while in terminal.
+  ;; make sure pbcopy/pbpaste if available on OS X
+  ;; and that xsel is install for Linux.
+
+  (cond
+   ;; OS X
+   ((string-equal system-type "darwin") ; Mac OS X
+    (progn
+      (setq save-to-clipboard-cmd "pbcopy")
+      (setq paste-from-clipboard-cmd "pbpaste")
+      )
+    )
+   ;; Linux
+   ((string-equal system-type "gnu/linux") ; linux
+    (progn
+      (setq save-to-clipboard-cmd "xsel -i -b")
+      (setq paste-from-clipboard-cmd "xsel -o -b")
+      )
+    )
+   )
+
+  (defun copy-to-clipboard ()
+    "Copies selection to x-clipboard."
+    (interactive)
+    (if (display-graphic-p)
+        (progn
+          (message "Yanked region to x-clipboard!")
+          (call-interactively 'clipboard-kill-ring-save)
+          )
+      (if (region-active-p)
+          (progn
+            (shell-command-on-region (region-beginning) (region-end) save-to-clipboard-cmd)
+            (message "Yanked region to clipboard!")
+            (deactivate-mark))
+        (message "No region active; can't yank to clipboard!")))
+    )
+
+  (defun paste-from-clipboard ()
+    "Pastes from x-clipboard."
+    (interactive)
+    (if (display-graphic-p)
+        (progn
+          (clipboard-yank)
+          (message "graphics active")
+          )
+      (insert (shell-command-to-string paste-from-clipboard-cmd))
+      )
+    )
+  (evil-leader/set-key "o y" 'copy-to-clipboard)
+  (evil-leader/set-key "o p" 'paste-from-clipboard)
+
+  ;; helpers to resize windows.
+  (evil-leader/set-key "w <down>" 'shrink-window)
+  (evil-leader/set-key "w <up>" 'enlarge-window)
+)
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -331,10 +510,34 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (noflet fuzzy ensime sbt-mode scala-mode company-statistics company-c-headers company-anaconda company auto-yasnippet yasnippet ac-ispell auto-complete x86-lookup toml-mode racer nasm-mode flycheck-rust cargo rust-mode go-guru go-eldoc go-mode yapfify xterm-color unfill smeargle shell-pop pyvenv pytest pyenv-mode py-isort pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode hy-mode dash-functional htmlize gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md flyspell-correct-ivy flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub let-alist with-editor eshell-z eshell-prompt-extras esh-help disaster diff-hl cython-mode cmake-mode clang-format auto-dictionary anaconda-mode pythonic ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup f dash s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy))))
+    (elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-flx helm-descbinds helm-ag flyspell-correct-helm ace-jump-helm-line helm-w3m w3m helm helm-core mu4e-maildirs-extension mu4e-alert ht web-mode tagedit slim-mode scss-mode sass-mode pug-mode haml-mode emmet-mode company-web web-completion-data yapfify xterm-color unfill smeargle shell-pop pyvenv pytest pyenv-mode py-isort pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim multi-term magit-gitflow magit-popup live-py-mode hy-mode dash-functional htmlize gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter fuzzy flyspell-correct-ivy flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help diff-hl cython-mode company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump popup f dash s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy)))
+ '(smtpmail-smtp-server "mail.gandi.net")
+ '(smtpmail-smtp-service 25))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (toml-mode racer flycheck-rust cargo rust-mode elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-flx helm-descbinds helm-ag flyspell-correct-helm ace-jump-helm-line helm-w3m w3m helm helm-core mu4e-maildirs-extension mu4e-alert ht web-mode tagedit slim-mode scss-mode sass-mode pug-mode haml-mode emmet-mode company-web web-completion-data yapfify xterm-color unfill smeargle shell-pop pyvenv pytest pyenv-mode py-isort pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim multi-term magit-gitflow magit-popup live-py-mode hy-mode dash-functional htmlize gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter fuzzy flyspell-correct-ivy flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help diff-hl cython-mode company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete mmm-mode markdown-toc markdown-mode gh-md ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump popup f dash s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy)))
+ '(smtpmail-smtp-server "mail.gandi.net")
+ '(smtpmail-smtp-service 25))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)

@@ -1,0 +1,8 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+	name = n0mn0m
+	email = alexander@unexpectedeof.net
+	signingKey = F0ABD4CC9ED2D47ED61D6B53685AA65EEA3AC5FC
+[commit]
+	gpgSign = true

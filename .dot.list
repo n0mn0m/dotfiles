@@ -1,0 +1,10 @@
+.gitconfig
+.bashrc
+.bash_profile
+.bash_aliases
+.profile
+.mbsyncrc
+.msmtprc
+.spacemacs
+.elfeed/index
+.dot.list
