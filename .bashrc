@@ -143,3 +143,5 @@ export SCM_GIT_SHOW_STASH_INFO=true
 export SCM_GIT_SHOW_COMMIT_COUNT=true
 
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/snap/bin:$PATH"
+
+source $HOME/.virtualenvs/python37/bin/activate
