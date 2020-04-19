@@ -3,6 +3,8 @@
 # Please adapt and uncomment the following lines:
 	name = n0mn0m
 	email = alexander@unexpectedeof.net
-	signingKey = F0ABD4CC9ED2D47ED61D6B53685AA65EEA3AC5FC
+	signingkey = EB589747BCEE2FD1
 [commit]
 	gpgSign = true
+[diff]
+	submodule = log
