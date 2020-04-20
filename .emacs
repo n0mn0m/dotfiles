@@ -1,43 +1,45 @@
-(setq default-directory "~/projects")
+;; first, declare repositories
+(setq package-archives
+      '(("gnu" . "http://elpa.gnu.org/packages/")
+        ("melpa" . "http://melpa.org/packages/")))
 
 ;; Init the package facility
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-
-(package-initialize)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-
 (require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (add-to-list 'package-archives
-               (cons "melpa" (concat proto "://melpa.org/packages/")) t))
 (package-initialize)
 
-;; since refreshing packages is time-consuming and should be done on demand
 ;; (package-refresh-contents) ;; this line is commented 
+;; since refreshing packages is time-consuming and should be done on demand
 
 ;; Declare packages
 (setq my-packages
       '(all-the-icons
 	async
 	captain
+	cider
 	company
-	eglot
+	csv-mode
+	dockerfile-mode
 	evil
 	expand-region
 	exec-path-from-shell
 	fill-column-indicator
+	flycheck
 	highlight-escape-sequences
 	ivy
+        json-mode
 	kaolin-themes
+	lsp-mode
+	lsp-ui
+	lsp-ivy
         magit
+        markdown-mode
 	neotree
 	org
 	paradox
 	projectile
 	rainbow-delimiters
+	realgud-ipdb
+	realgud-lldb
 	smartparens
 	sql-indent
 	undo-tree
@@ -52,25 +54,48 @@
   (unless (package-installed-p pkg)
     (package-install pkg)))
 
-(defvar --backup-directory (concat user-emacs-directory "backups"))
-(if (not (file-exists-p --backup-directory))
-        (make-directory --backup-directory t))
-(setq backup-directory-alist `(("." . ,--backup-directory)))
-(setq make-backup-files t               ; backup of a file the first time it is saved.
-      backup-by-copying t               ; don't clobber symlinks
-      version-control t                 ; version numbers for backup files
-      delete-old-versions t             ; delete excess backup files silently
-      delete-by-moving-to-trash t
-      kept-old-versions 3               ; oldest versions to keep when a new numbered backup is made (default: 2)
-      kept-new-versions 6               ; newest versions to keep when a new numbered backup is made (default: 2)
-      auto-save-default t               ; auto-save every buffer that visits a file
-      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
-      auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
-      )
 
 ;; Custom mode hooks
 (add-hook 'python-mode-hook #'smartparens-mode)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+(add-hook 'prog-mode-hook
+   (lambda ()
+     (setq captain-predicate (lambda () (nth 8 (syntax-ppss (point)))))))
+
+(add-hook 'text-mode-hook
+          (lambda ()
+            (setq captain-predicate (lambda () t))))
+
+(add-hook
+ 'org-mode-hook
+ (lambda ()
+   (setq captain-predicate
+         (lambda () (not (org-in-src-block-p))))))
+
+(add-hook 'prog-mode-hook #'lsp-deferred)
+
+(use-package lsp-mode
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (prog-mode . lsp-deferred))
+  :commands (lsp lsp-deferred)
+  :config (setenv "PATH" (concat
+                   "/usr/local/bin" path-separator
+                   (getenv "PATH")))
+  (dolist (m '(clojure-mode
+               clojurec-mode
+               clojurescript-mode
+               clojurex-mode))
+     (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-enable-indentation nil)
+  (add-hook 'clojure-mode-hook #'lsp)
+  (add-hook 'clojurec-mode-hook #'lsp)
+  (add-hook 'clojurescript-mode-hook #'lsp))
+
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package company-lsp :commands company-lsp)
 
 (use-package all-the-icons)
 
@@ -85,6 +110,7 @@
             (lambda (&rest _) (display-line-numbers-mode -1)))
   (setq neo-smart-open t))
 
+
 ;; Enable built in line numbers
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
@@ -96,19 +122,16 @@
   (split-window-right)
   (other-window -1)
   (eshell)
-  (setq neo-window-width 45)
   (neotree-toggle)
-  (neotree-hidden-file-toggle)
   )
 
 ;; After packages are installed and init is done initialize
 ;; last steps.
 (add-hook 'after-init-hook
-	  (global-company-mode)
+	  (global-flycheck-mode)
 	  (my-layout)
 	  (evil-mode 1)
 	  )
-
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 (use-package kaolin-themes
@@ -125,17 +148,22 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("f7b0f2d0f37846ef75157f5c8c159e6d610c3efcc507cbddec789c02e165c121" "3ee39fe8a6b6e0f1cbdfa33db1384bc778e3eff4118daa54af7965e9ab8243b3" "53993d7dc1db7619da530eb121aaae11c57eaf2a2d6476df4652e6f0bd1df740" "2f945b8cbfdd750aeb82c8afb3753ebf76a1c30c2b368d9d1f13ca3cc674c7bc" "58c2c8cc4473c5973e77f4b78a68c0978e68f1ddeb7a1eb34456fce8450be497" "0eb3c0868ff890b0c4ee138069ce2a8936a8a69ba150efa6bfb9fb7c05af5ec3" "ed573618e4c25fa441f12cbbb786fb56d918f216ae4a895ca1c74f34a19cfe67" default)))
- '(inhibit-startup-screen t)
  '(package-selected-packages
    (quote
-    (terraform-mode kaolin-themes yaml-mode wrap-region use-package treemacs-projectile treemacs-magit treemacs-icons-dired sql-indent smartparens realgud-lldb realgud-ipdb rainbow-delimiters racket-mode paradox neotree lsp-mode json-mode ivy highlight-escape-sequences flycheck fill-column-indicator expand-region exec-path-from-shell dockerfile-mode csv-mode cider captain all-the-icons))))
+    (kaolin-themes yaml-mode wrap-region use-package treemacs-projectile treemacs-magit treemacs-icons-dired sql-indent smartparens realgud-lldb realgud-ipdb rainbow-delimiters racket-mode paradox neotree lsp-mode json-mode ivy highlight-escape-sequences flycheck fill-column-indicator expand-region exec-path-from-shell dockerfile-mode csv-mode cider captain all-the-icons))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ (set-face-attribute 'default nil
+		     :family "JetBrains Mono"
+		     :height (+ (face-attribute 'default :height)
+                         10))
+  (set-face-attribute 'neo-button-face      nil :family "CozetteVector")
+  (set-face-attribute 'neo-file-link-face   nil :family "CozetteVector")
+  (set-face-attribute 'neo-dir-link-face    nil :family "CozetteVector")
+  (set-face-attribute 'neo-header-face      nil :family "CozetteVector")
+  (set-face-attribute 'neo-expand-btn-face  nil :family "CozetteVector")
  )
 ;; .emacs ends here
