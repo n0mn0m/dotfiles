@@ -1,13 +1,14 @@
-;; first, declare repositories
-(setq package-archives
-      '(("gnu" . "http://elpa.gnu.org/packages/")
-        ("melpa" . "http://melpa.org/packages/")))
-
 ;; Init the package facility
 (require 'package)
 (package-initialize)
 
-;; (package-refresh-contents) ;; this line is commented 
+;; first, declare repositories
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+	("gnu" . "https://elpa.gnu.org/packages/")
+        ))
+
+(package-refresh-contents) ;; this line is commented 
 ;; since refreshing packages is time-consuming and should be done on demand
 
 ;; Declare packages
