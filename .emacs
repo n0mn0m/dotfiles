@@ -8,45 +8,33 @@
 	("gnu" . "https://elpa.gnu.org/packages/")
         ))
 
-(package-refresh-contents) ;; this line is commented 
-;; since refreshing packages is time-consuming and should be done on demand
+(when (not package-archive-contents)
+    (package-refresh-contents))
 
 ;; Declare packages
 (setq my-packages
       '(all-the-icons
 	async
-	captain
 	cider
 	company
 	csv-mode
 	dockerfile-mode
 	evil
+	eglot
 	expand-region
 	exec-path-from-shell
 	fill-column-indicator
-	flycheck
 	highlight-escape-sequences
-	ivy
         json-mode
 	kaolin-themes
-	lsp-mode
-	lsp-ui
-	lsp-ivy
         magit
         markdown-mode
 	neotree
 	org
-	paradox
 	projectile
 	rainbow-delimiters
-	realgud-ipdb
-	realgud-lldb
-	smartparens
 	sql-indent
-	undo-tree
 	use-package
-        wrap-region
-	yasnippet
         yaml-mode
         ))
 
@@ -55,51 +43,12 @@
   (unless (package-installed-p pkg)
     (package-install pkg)))
 
+(setq default-directory (concat (getenv "HOME") "/projects"))
 
 ;; Custom mode hooks
-(add-hook 'python-mode-hook #'smartparens-mode)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
-(add-hook 'prog-mode-hook
-   (lambda ()
-     (setq captain-predicate (lambda () (nth 8 (syntax-ppss (point)))))))
-
-(add-hook 'text-mode-hook
-          (lambda ()
-            (setq captain-predicate (lambda () t))))
-
-(add-hook
- 'org-mode-hook
- (lambda ()
-   (setq captain-predicate
-         (lambda () (not (org-in-src-block-p))))))
-
-(add-hook 'prog-mode-hook #'lsp-deferred)
-
-(use-package lsp-mode
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (prog-mode . lsp-deferred))
-  :commands (lsp lsp-deferred)
-  :config (setenv "PATH" (concat
-                   "/usr/local/bin" path-separator
-                   (getenv "PATH")))
-  (dolist (m '(clojure-mode
-               clojurec-mode
-               clojurescript-mode
-               clojurex-mode))
-     (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  (setq lsp-enable-indentation nil)
-  (add-hook 'clojure-mode-hook #'lsp)
-  (add-hook 'clojurec-mode-hook #'lsp)
-  (add-hook 'clojurescript-mode-hook #'lsp))
-
-(use-package lsp-ui :commands lsp-ui-mode)
-(use-package company-lsp :commands company-lsp)
-
 (use-package all-the-icons)
-
 ;; Neotree config
 (use-package neotree
   :bind
@@ -109,8 +58,9 @@
   ;; Disable line-numbers minor mode for neotree
   (add-hook 'neo-after-create-hook
             (lambda (&rest _) (display-line-numbers-mode -1)))
+  (setq-default neo-show-hidden-files t)
+  (setq neo-window-width 35)
   (setq neo-smart-open t))
-
 
 ;; Enable built in line numbers
 (when (version<= "26.0.50" emacs-version )
@@ -126,10 +76,26 @@
   (neotree-toggle)
   )
 
+;; Configure backups
+(defvar --backup-directory (concat (getenv "HOME") "/.emacs.d/backups"))
+(if (not (file-exists-p --backup-directory))
+        (make-directory --backup-directory t))
+(setq backup-directory-alist `(("." . ,--backup-directory)))
+(setq make-backup-files t               ; backup of a file the first time it is saved.
+      backup-by-copying t               ; don't clobber symlinks
+      version-control t                 ; version numbers for backup files
+      delete-old-versions t             ; delete excess backup files silently
+      delete-by-moving-to-trash t
+      kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
+      kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
+      auto-save-default t               ; auto-save every buffer that visits a file
+      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
+      auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
+      )
+
 ;; After packages are installed and init is done initialize
-;; last steps.
+;; last steps focus on layout.
 (add-hook 'after-init-hook
-	  (global-flycheck-mode)
 	  (my-layout)
 	  (evil-mode 1)
 	  )
