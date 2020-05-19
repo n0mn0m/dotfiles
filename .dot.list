@@ -1,5 +1,8 @@
 .gitconfig
 .profile
+.aliasrc
+.zshrc
+.zshenv
 .emacs
 .elfeed/index
 .dot.list
