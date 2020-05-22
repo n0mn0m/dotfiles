@@ -58,9 +58,25 @@ if [[ -r ~/.aliasrc ]]; then
 	. ~/.aliasrc
 fi
 
+# Directory shortcuts e.g.: ~proj
+hash -d projects=$HOME/projects
+
 # Always work in a virtual environment by default for Python.
 source $HOME/.virtualenvs/38/bin/activate
 export PYTHONBREAKPOINT='pudb.set_trace'
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk13/Contents/Home
+
+# Filter history completion with what you typed 
+# Make up and down arrow take what’s typed on the commandline in to account. 
+# e.g. if you type ls and press up it will only find history entries that start with ls:
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+bindkey '^[[A'  up-line-or-beginning-search    # Arrow up
+bindkey '^[OA'  up-line-or-beginning-search
+bindkey '^[[B'  down-line-or-beginning-search  # Arrow down
+bindkey '^[OB'  down-line-or-beginning-search
 
