@@ -16,9 +16,11 @@
       '(all-the-icons
 	async
 	cargo
-	cider
 	company
+	counsel
+	csharp-mode
 	csv-mode
+	dap-mode
 	dockerfile-mode
 	eglot
 	elfeed
@@ -26,6 +28,7 @@
 	expand-region
 	exec-path-from-shell
 	fill-column-indicator
+	flycheck
 	highlight-escape-sequences
         json-mode
 	kaolin-themes
@@ -33,6 +36,7 @@
         markdown-mode
 	neotree
 	org
+	omnisharp
 	projectile
 	rainbow-delimiters
 	rust-mode
@@ -48,10 +52,41 @@
   (unless (package-installed-p pkg)
     (package-install pkg)))
 
-(setq default-directory (concat (getenv "HOME") "/projects"))
+(setq default-directory (getenv "HOME"))
+
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+
+(setenv "ESHELL" (expand-file-name "~/bin/eshell"))
 
 ;; Custom mode hooks
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+(use-package ivy
+  :ensure t
+  :diminish (ivy-mode . "")
+  :init (ivy-mode 1)
+  :config
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-height 20)
+    (setq ivy-count-format "%d/%d "))
+
+(use-package company
+  :ensure t
+  :init
+    (add-hook 'after-init-hook 'global-company-mode))
+
+(use-package csharp-mode
+  :ensure t
+  :mode "\\.cs\\'"
+  :init
+    (add-hook 'csharp-mode-hook 'omnisharp-mode)
+    (add-to-list 'company-backends 'company-omnisharp)
+    (add-hook 'csharp-mode-hook 'company-mode))
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 
 (use-package eglot
   :ensure t
@@ -72,10 +107,8 @@
   :mode "\\.toml\\'"
   :ensure t)
 
-(require 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
-
 (use-package all-the-icons)
+
 ;; Neotree config
 (use-package neotree
   :bind
@@ -94,20 +127,14 @@
   (global-display-line-numbers-mode))
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
-;; Init windows
-(defun my-layout()
-  (interactive)
-  (split-window-right)
-  (other-window -1)
-  (eshell)
-  (neotree-toggle)
-  )
-
 ;; Configure backups
 (defvar --backup-directory (concat (getenv "HOME") "/.emacs.d/backups"))
+
 (if (not (file-exists-p --backup-directory))
         (make-directory --backup-directory t))
+
 (setq backup-directory-alist `(("." . ,--backup-directory)))
+
 (setq make-backup-files t               ; backup of a file the first time it is saved.
       backup-by-copying t               ; don't clobber symlinks
       version-control t                 ; version numbers for backup files
@@ -118,19 +145,24 @@
       auto-save-default t               ; auto-save every buffer that visits a file
       auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
-      )
+)
+
+;; Init windows
+(defun my-layout()
+  (neotree-toggle))
+
 
 ;; After packages are installed and init is done initialize
 ;; last steps focus on layout.
 (add-hook 'after-init-hook
 	  (my-layout)
-	  (evil-mode 1)
-	  )
+	  (evil-mode 1))
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 (use-package kaolin-themes
   :config
-  (load-theme 'kaolin-temple t))
+  (load-theme 'kaolin-light t))
 
 (setq kaolin-themes-distinct-fringe t)  
 (setq kaolin-themes-distinct-company-scrollbar t)
@@ -139,60 +171,8 @@
 (setq elfeed-feeds
       '("http://planet.emacsen.org/atom.xml"
 	"https://blog.acolyer.org/feed/"
-	"https://thecrazyprogrammer.com/feed"
-	"https://unixism.net/feed"
-	"https://idea.popcount.org/rss.xml"
-	"https://ferrisellis.com/index.xml"
-	"https://www.bunniestudios.com/blog/?feed=rss2"
-	"https://hackaday.com/rss"
-	"https://toorcamp.toorcon.net/feed"
-	"https://www.archlinux.org/feeds/news/"
-	"https://www.freebsd.org/news/rss.xml"
-	"https://mwl.io/feed"
-	"https://www.depesz.com/feed/"
-	"https://dbmsmusings.blogspot.com/feeds/posts/default"
-	"https://blogs.msdn.microsoft.com/oldnewthing/feed"
-	"http://fabiensanglard.net/rss.xml"
-	"http://nullprogram.com/feed"
-	"http://habitatchronicles.com/feed/"
-	"https://programmingisterrible.com/rss"
-	"http://joeduffyblog.com/feed.xml"
-	"https://www.sebastiansylvan.com/index.xml"
-	"https://programmingisterrible.com/rss"
-	"http://blog.cleancoder.com/atom.xml"
-	"http://250bpm.com/feed/pages/pagename/start/category/blog/t/250bpm-blogs/h/http%3A%2F%2Fwww.250bpm.com%2Fblog"
-	"https://drewdevault.com/feed.xml"
-	"https://smalldatum.blogspot.com/feeds/posts/default"
-	"https://blog.jessfraz.com/index.xml"
-	"https://easyperf.net/feed.xml"
-	"https://feeds.feedburner.com/TroyHunt"                                  
-	"https://rhettinger.wordpress.com/feed/"
-	"https://eli.thegreenplace.net/feeds/all.atom.xml"
-	"https://vorpus.org/blog/feeds/atom.xml"
-	"https://neopythonic.blogspot.com/feeds/posts/default"
-	"https://hynek.me/index.xml"
-	"https://unexpectedeof.net/feeds/all.atom.xml"
-	"http://lucumr.pocoo.org/feed.atom"
-	"https://feeds.feedburner.com/PythonSoftwareFoundationNews"
-	"https://blog.rust-lang.org/feed.xml"
-	"https://feeds.feedburner.com/steveklabnik/words"
-	"http://feeds.feedburner.com/eclipselive"
-	"http://www.fosslc.org/drupal/rss.xml"
-	"https://tim.mcnamara.nz/rss"                           
-	"https://kennykerr.ca/feed/"
-	"http://bitbashing.io/feed.xml"
-	"http://www.gregcons.com/KateBlog/SyndicationService.asmx/GetRss" 
-	"https://bg.battletech.com/feed/"
-	"https://www.emacsair.me/feed.xml"
-	"https://defn.io/index.xml"
-	"http://matt.might.net/articles/feed.rss"
-	"https://k155la3.blog/posts/index.xml"
-	"https://blog.balthazar-rouberol.com/feeds/all.atom.xml"
-	"https://rtpg.co/feed.xml"
 	"http://worrydream.com/feed.xml"
-	"https://lobste.rs/rss"
-	))
-
+	"https://lobste.rs/rss"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -201,20 +181,11 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (elfeed yasnippet kaolin-themes yaml-mode wrap-region use-package treemacs-projectile treemacs-magit treemacs-icons-dired sql-indent smartparens realgud-lldb realgud-ipdb rainbow-delimiters racket-mode paradox neotree lsp-mode json-mode ivy highlight-escape-sequences flycheck fill-column-indicator expand-region exec-path-from-shell dockerfile-mode csv-mode cider captain all-the-icons))))
+    (counsel dap-mode omnisharp ## zenburn-theme labburn-theme elfeed yasnippet kaolin-themes yaml-mode wrap-region use-package treemacs-projectile treemacs-magit treemacs-icons-dired sql-indent smartparens realgud-lldb realgud-ipdb rainbow-delimiters racket-mode paradox neotree lsp-mode json-mode ivy highlight-escape-sequences flycheck fill-column-indicator expand-region exec-path-from-shell dockerfile-mode csv-mode cider captain all-the-icons))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- (set-face-attribute 'default nil
-		     :family "JetBrains Mono"
-		     :height (+ (face-attribute 'default :height)
-                         10))
-  (set-face-attribute 'neo-button-face      nil :family "CozetteVector")
-  (set-face-attribute 'neo-file-link-face   nil :family "CozetteVector")
-  (set-face-attribute 'neo-dir-link-face    nil :family "CozetteVector")
-  (set-face-attribute 'neo-header-face      nil :family "CozetteVector")
-  (set-face-attribute 'neo-expand-btn-face  nil :family "CozetteVector")
  )
 ;; .emacs ends here
