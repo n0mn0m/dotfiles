@@ -54,73 +54,7 @@
 
 (setq default-directory (getenv "HOME"))
 
-(require 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
-
 (setenv "ESHELL" (expand-file-name "~/bin/eshell"))
-
-;; Custom mode hooks
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-
-(use-package ivy
-  :ensure t
-  :diminish (ivy-mode . "")
-  :init (ivy-mode 1)
-  :config
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-height 20)
-    (setq ivy-count-format "%d/%d "))
-
-(use-package company
-  :ensure t
-  :init
-    (add-hook 'after-init-hook 'global-company-mode))
-
-(use-package csharp-mode
-  :ensure t
-  :mode "\\.cs\\'"
-  :init
-    (add-hook 'csharp-mode-hook 'omnisharp-mode)
-    (add-to-list 'company-backends 'company-omnisharp)
-    (add-hook 'csharp-mode-hook 'company-mode))
-
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
-
-(use-package eglot
-  :ensure t
-  :demand)
-
-(use-package rust-mode
-  :ensure t
-  :mode "\\.rs\\'"
-  :init
-  (add-hook 'rust-mode-hook #'eglot-ensure)
-  :config (setq rust-format-on-save t))
-
-(use-package cargo
-  :ensure t
-  :hook ((rust-mode toml-mode) . cargo-minor-mode))
-
-(use-package toml-mode
-  :mode "\\.toml\\'"
-  :ensure t)
-
-(use-package all-the-icons)
-
-;; Neotree config
-(use-package neotree
-  :bind
-  ("<f8>" . neotree-toggle)
-  :config
-  (setq neo-theme (if (display-graphic-p) 'icons 'icons))
-  ;; Disable line-numbers minor mode for neotree
-  (add-hook 'neo-after-create-hook
-            (lambda (&rest _) (display-line-numbers-mode -1)))
-  (setq-default neo-show-hidden-files t)
-  (setq neo-window-width 35)
-  (setq neo-smart-open t))
 
 ;; Enable built in line numbers
 (when (version<= "26.0.50" emacs-version )
@@ -147,32 +81,111 @@
       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
 )
 
-;; Init windows
-(defun my-layout()
-  (neotree-toggle))
-
-
-;; After packages are installed and init is done initialize
-;; last steps focus on layout.
-(add-hook 'after-init-hook
-	  (my-layout)
-	  (evil-mode 1))
-
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(use-package kaolin-themes
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package expand-region
+  :ensure t
   :config
-  (load-theme 'kaolin-light t))
+    (global-set-key (kbd "C-=") 'er/expand-region))
 
-(setq kaolin-themes-distinct-fringe t)  
-(setq kaolin-themes-distinct-company-scrollbar t)
-(setq kaolin-themes-git-gutter-solid t)
+(use-package kaolin-themes
+  :ensure t
+  :init
+    (setq kaolin-themes-distinct-fringe t)
+    (setq kaolin-themes-distinct-company-scrollbar t)
+    (setq kaolin-themes-git-gutter-solid t)
+  :config
+    (load-theme 'kaolin-light t))
 
-(setq elfeed-feeds
-      '("http://planet.emacsen.org/atom.xml"
-	"https://blog.acolyer.org/feed/"
-	"http://worrydream.com/feed.xml"
-	"https://lobste.rs/rss"))
+;; load evil
+(use-package evil
+  :ensure t ;; install the evil package if not installed
+  :init ;; tweak evil's configuration before loading it
+    (setq evil-search-module 'evil-search)
+    (setq evil-ex-complete-emacs-commands nil)
+    (setq evil-vsplit-window-right t)
+    (setq evil-split-window-below t)
+    (setq evil-shift-round nil)
+    (setq evil-want-C-u-scroll t)
+  :config ;; tweak evil after loading it
+    (evil-mode))
+
+(use-package all-the-icons
+  :ensure t)
+
+;; Neotree config
+(use-package neotree
+  :bind
+  ("<f8>" . neotree-toggle)
+  :config
+  (setq neo-theme (if (display-graphic-p) 'icons 'icons))
+  ;; Disable line-numbers minor mode for neotree
+  (add-hook 'neo-after-create-hook
+            (lambda (&rest _) (display-line-numbers-mode -1)))
+  (setq-default neo-show-hidden-files t)
+  (setq neo-window-width 35)
+  (setq neo-smart-open t))
+
+(use-package ivy
+  :ensure t
+  :diminish (ivy-mode . "")
+  :init
+    (ivy-mode 1)
+  :config
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-height 20)
+    (setq ivy-count-format "%d/%d "))
+
+(use-package company
+  :ensure t
+  :init
+    (add-hook 'after-init-hook 'global-company-mode))
+
+(use-package flycheck
+  :ensure t
+  :init
+    (global-flycheck-mode))
+
+(use-package eglot
+  :ensure t
+  :demand)
+
+(use-package csharp-mode
+  :ensure t
+  :mode "\\.cs\\'"
+  :init
+    (add-hook 'csharp-mode-hook 'omnisharp-mode)
+    (add-to-list 'company-backends 'company-omnisharp)
+    (add-hook 'csharp-mode-hook 'company-mode))
+
+(use-package rust-mode
+  :ensure t
+  :mode "\\.rs\\'"
+  :init
+  (add-hook 'rust-mode-hook #'eglot-ensure)
+  :config (setq rust-format-on-save t))
+
+(use-package cargo
+  :ensure t
+  :hook ((rust-mode toml-mode) . cargo-minor-mode))
+
+(use-package toml-mode
+  :ensure t
+  :mode "\\.toml\\'")
+
+(use-package elfeed
+  :ensure t
+  :init
+    (setq elfeed-feeds
+	  '("http://planet.emacsen.org/atom.xml"
+	    "https://blog.acolyer.org/feed/"
+	    "http://worrydream.com/feed.xml"
+	    "https://lobste.rs/rss")))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -189,3 +202,4 @@
  ;; If there is more than one, they won't work right.
  )
 ;; .emacs ends here
+
