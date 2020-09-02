@@ -1,56 +1,4 @@
-;; Init the package facility
-(require 'package)
-(package-initialize)
-
-;; first, declare repositories
-(setq package-archives
-      '(("melpa" . "https://melpa.org/packages/")
-	("gnu" . "https://elpa.gnu.org/packages/")
-        ))
-
-(when (not package-archive-contents)
-    (package-refresh-contents))
-
-;; Declare packages
-(setq my-packages
-      '(all-the-icons
-	async
-	cargo
-	company
-	counsel
-	csharp-mode
-	csv-mode
-	dap-mode
-	dockerfile-mode
-	eglot
-	elfeed
-	evil
-	expand-region
-	exec-path-from-shell
-	fill-column-indicator
-	flycheck
-	highlight-escape-sequences
-        json-mode
-	kaolin-themes
-        magit
-        markdown-mode
-	neotree
-	org
-	omnisharp
-	projectile
-	rainbow-delimiters
-	rust-mode
-	sql-indent
-	toml-mode
-	use-package
-        yaml-mode
-	yasnippet
-        ))
-
-;; Iterate on packages and install missing ones
-(dolist (pkg my-packages)
-  (unless (package-installed-p pkg)
-    (package-install pkg)))
+;;; start config
 
 (setq default-directory (getenv "HOME"))
 
@@ -81,30 +29,115 @@
       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
 )
 
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
+(setq inhibit-startup-screen t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(use-package rainbow-delimiters
-  :ensure t
+(global-visual-line-mode 1)
+(setq-default indent-tabs-mode nil)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(setq ring-bell-function 'ignore)
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Init the package facility
+(require 'package)
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package)
+  (eval-when-compile (require 'use-package)))
+
+(setq use-package-always-ensure t)
+
+;; first, declare repositories
+(use-package package
   :init
-    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+    (setq package-archives
+	  '(("melpa" . "https://melpa.org/packages/")
+	    ("gnu" . "https://elpa.gnu.org/packages/")
+	    ))
+    (package-refresh-contents)
+
+    ;; Declare packages
+    (setq my-packages
+	  '(all-the-icons
+	    async
+	    cargo
+	    company
+	    counsel
+	    csharp-mode
+	    csv-mode
+	    dap-mode
+	    dockerfile-mode
+	    eglot
+	    elfeed
+	    evil
+	    expand-region
+	    exec-path-from-shell
+	    fill-column-indicator
+	    flycheck
+	    highlight-escape-sequences
+	    ivy
+	    ivy-hydra
+	    json-mode
+	    kaolin-themes
+	    magit
+	    markdown-mode
+	    neotree
+	    org
+	    omnisharp
+	    prescient
+	    projectile
+	    rainbow-delimiters
+	    rust-mode
+	    sql-indent
+	    toml-mode
+	    use-package
+	    yaml-mode
+	    yasnippet
+	    ))
+
+    ;; Iterate on packages and install missing ones
+    (dolist (pkg my-packages)
+      (unless (package-installed-p pkg)
+	(package-install pkg))))
+
+(use-package rainbow-delimiters
+  :init
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+
+(use-package smartparens
+  :config
+  (add-hook 'prog-mode-hook 'smartparens-mode))
 
 (use-package expand-region
-  :ensure t
   :config
     (global-set-key (kbd "C-=") 'er/expand-region))
 
+(use-package exec-path-from-shell
+  :config
+  (exec-path-from-shell-initialize))
+
+(use-package magit
+  :bind ("C-x g" . magit-status))
+
+(use-package git-gutter
+  :config
+  (global-git-gutter-mode 't))
+
 (use-package kaolin-themes
-  :ensure t
   :init
     (setq kaolin-themes-distinct-fringe t)
     (setq kaolin-themes-distinct-company-scrollbar t)
     (setq kaolin-themes-git-gutter-solid t)
   :config
-    (load-theme 'kaolin-light t))
+    (load-theme 'kaolin-breeze t))
 
 ;; load evil
 (use-package evil
-  :ensure t ;; install the evil package if not installed
   :init ;; tweak evil's configuration before loading it
     (setq evil-search-module 'evil-search)
     (setq evil-ex-complete-emacs-commands nil)
@@ -121,18 +154,17 @@
 ;; Neotree config
 (use-package neotree
   :bind
-  ("<f8>" . neotree-toggle)
+    ("<f8>" . neotree-toggle)
   :config
-  (setq neo-theme (if (display-graphic-p) 'icons 'icons))
-  ;; Disable line-numbers minor mode for neotree
-  (add-hook 'neo-after-create-hook
-            (lambda (&rest _) (display-line-numbers-mode -1)))
-  (setq-default neo-show-hidden-files t)
-  (setq neo-window-width 35)
-  (setq neo-smart-open t))
+    (setq neo-theme (if (display-graphic-p) 'icons 'icons))
+    ;; Disable line-numbers minor mode for neotree
+    (add-hook 'neo-after-create-hook
+              (lambda (&rest _) (display-line-numbers-mode -1)))
+    (setq-default neo-show-hidden-files t)
+    (setq neo-window-width 35)
+    (setq neo-smart-open t))
 
 (use-package ivy
-  :ensure t
   :diminish (ivy-mode . "")
   :init
     (ivy-mode 1)
@@ -141,22 +173,63 @@
     (setq ivy-height 20)
     (setq ivy-count-format "%d/%d "))
 
+(use-package prescient)
+
+(use-package ivy-prescient
+  :config
+  (ivy-prescient-mode t))
+
 (use-package company
-  :ensure t
+  :ensure
   :init
     (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package flycheck
-  :ensure t
-  :init
-    (global-flycheck-mode))
+  :config
+    (add-hook 'after-init-hook 'global-flycheck-mode)
+    (add-hook 'flycheck-mode-hook 'jc/use-eslint-from-node-modules)
+    (add-to-list 'flycheck-checkers 'proselint)
+    (setq-default flycheck-highlighting-mode 'lines)
+    ;; Define fringe indicator / warning levels
+    (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
+      (vector #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00011100
+              #b00111110
+              #b00111110
+              #b00111110
+              #b00011100
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000))
+    (flycheck-define-error-level 'error
+      :severity 2
+      :overlay-category 'flycheck-error-overlay
+      :fringe-bitmap 'flycheck-fringe-bitmap-ball
+      :fringe-face 'flycheck-fringe-error)
+    (flycheck-define-error-level 'warning
+      :severity 1
+      :overlay-category 'flycheck-warning-overlay
+      :fringe-bitmap 'flycheck-fringe-bitmap-ball
+      :fringe-face 'flycheck-fringe-warning)
+    (flycheck-define-error-level 'info
+      :severity 0
+      :overlay-category 'flycheck-info-overlay
+      :fringe-bitmap 'flycheck-fringe-bitmap-ball
+      :fringe-face 'flycheck-fringe-info))
 
 (use-package eglot
   :ensure t
   :demand)
 
 (use-package csharp-mode
-  :ensure t
   :mode "\\.cs\\'"
   :init
     (add-hook 'csharp-mode-hook 'omnisharp-mode)
@@ -164,22 +237,18 @@
     (add-hook 'csharp-mode-hook 'company-mode))
 
 (use-package rust-mode
-  :ensure t
   :mode "\\.rs\\'"
   :init
   (add-hook 'rust-mode-hook #'eglot-ensure)
   :config (setq rust-format-on-save t))
 
 (use-package cargo
-  :ensure t
   :hook ((rust-mode toml-mode) . cargo-minor-mode))
 
 (use-package toml-mode
-  :ensure t
   :mode "\\.toml\\'")
 
 (use-package elfeed
-  :ensure t
   :init
     (setq elfeed-feeds
 	  '("http://planet.emacsen.org/atom.xml"
@@ -187,14 +256,37 @@
 	    "http://worrydream.com/feed.xml"
 	    "https://lobste.rs/rss")))
 
+(use-package yasnippet
+      :config
+      (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
+      (yas-global-mode 1))
+
+(use-package yasnippet-snippets)
+
+(use-package markdown-mode
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+
+(set-face-attribute 'default nil
+		     :family "JetBrains Mono"
+		     :height (+ (face-attribute 'default :height) 10))
+
+;; (set-face-attribute 'neo-button-face      nil :family "CozetteVector")
+;; (set-face-attribute 'neo-file-link-face   nil :family "CozetteVector")
+;; (set-face-attribute 'neo-dir-link-face    nil :family "CozetteVector")
+;; (set-face-attribute 'neo-header-face      nil :family "CozetteVector")
+;; (set-face-attribute 'neo-expand-btn-face  nil :family "CozetteVector")
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   (quote
-    (counsel dap-mode omnisharp ## zenburn-theme labburn-theme elfeed yasnippet kaolin-themes yaml-mode wrap-region use-package treemacs-projectile treemacs-magit treemacs-icons-dired sql-indent smartparens realgud-lldb realgud-ipdb rainbow-delimiters racket-mode paradox neotree lsp-mode json-mode ivy highlight-escape-sequences flycheck fill-column-indicator expand-region exec-path-from-shell dockerfile-mode csv-mode cider captain all-the-icons))))
+   '(yasnippet-snippets which-key git-gutter counsel dap-mode omnisharp ## zenburn-theme labburn-theme elfeed yasnippet kaolin-themes yaml-mode wrap-region use-package treemacs-projectile treemacs-magit treemacs-icons-dired sql-indent smartparens realgud-lldb realgud-ipdb rainbow-delimiters racket-mode paradox neotree lsp-mode json-mode ivy highlight-escape-sequences flycheck fill-column-indicator expand-region exec-path-from-shell dockerfile-mode csv-mode cider captain all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -202,4 +294,3 @@
  ;; If there is more than one, they won't work right.
  )
 ;; .emacs ends here
-
