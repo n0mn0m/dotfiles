@@ -6,3 +6,4 @@
 .emacs
 .elfeed/index
 .dot.list
+./bin/eshell

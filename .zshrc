@@ -1,12 +1,12 @@
 setopt no_beep
 
-# [[ $EMACS = t ]] && unsetopt zle
 
 bindkey -v
 export EDITOR='vim'
 export LANG='en_US.UTF-8'
 
 typeset -U path
+
 path=(/Applications/Keybase.app/Contents/SharedSupport/bin /Users/n0mn0m/.cargo/bin /Users/n0mn0m/.npm-global/bin /opt/local/bin /opt/local/sbin/ /Users/n0mn0m/.dotnet/tools /Users/n0mn0m/.gem/ruby/2.6.0/bin $path)
 
 # Navigation
@@ -71,8 +71,8 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk13/Contents/Home
 
 source $HOME/projects/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
-# Filter history completion with what you typed 
-# Make up and down arrow take what’s typed on the commandline in to account. 
+# Filter history completion with what you typed
+# Make up and down arrow take what’s typed on the commandline in to account.
 # e.g. if you type ls and press up it will only find history entries that start with ls:
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 
@@ -83,4 +83,3 @@ bindkey '^[[A'  up-line-or-beginning-search    # Arrow up
 bindkey '^[OA'  up-line-or-beginning-search
 bindkey '^[[B'  down-line-or-beginning-search  # Arrow down
 bindkey '^[OB'  down-line-or-beginning-search
-

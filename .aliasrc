@@ -15,9 +15,6 @@ alias bd="rsync -av --files-from=$HOME/.dot.list $HOME $HOME/projects/dotfiles/;
 
 alias nux="TERM=xterm-256color tmux new -s"
 
-alias emacs="/Applications/MacPorts/Emacs.app/Contents/MacOS/Emacs "
-alias tmacs="emacs -nw"
-
 alias gs='git status -sb'
 alias gv='git log --graph --decorate --oneline --all'
 alias gc='git commit -v'

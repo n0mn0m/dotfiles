@@ -162,7 +162,12 @@
               (lambda (&rest _) (display-line-numbers-mode -1)))
     (setq-default neo-show-hidden-files t)
     (setq neo-window-width 35)
-    (setq neo-smart-open t))
+    (setq neo-smart-open t)
+    (set-face-attribute 'neo-button-face      nil :family "CozetteVector")
+    (set-face-attribute 'neo-file-link-face   nil :family "CozetteVector")
+    (set-face-attribute 'neo-dir-link-face    nil :family "CozetteVector")
+    (set-face-attribute 'neo-header-face      nil :family "CozetteVector")
+    (set-face-attribute 'neo-expand-btn-face  nil :family "CozetteVector"))
 
 (use-package ivy
   :diminish (ivy-mode . "")
@@ -272,13 +277,7 @@
 
 (set-face-attribute 'default nil
 		     :family "JetBrains Mono"
-		     :height (+ (face-attribute 'default :height) 10))
-
-;; (set-face-attribute 'neo-button-face      nil :family "CozetteVector")
-;; (set-face-attribute 'neo-file-link-face   nil :family "CozetteVector")
-;; (set-face-attribute 'neo-dir-link-face    nil :family "CozetteVector")
-;; (set-face-attribute 'neo-header-face      nil :family "CozetteVector")
-;; (set-face-attribute 'neo-expand-btn-face  nil :family "CozetteVector")
+		     :height 160)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

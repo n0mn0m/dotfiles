@@ -4,7 +4,8 @@
 	name = n0mn0m
 	email = alexander@unexpectedeof.net
 	signingkey = EB589747BCEE2FD1
-[commit]
-	gpgSign = true
+
 [diff]
 	submodule = log
+[core]
+	autocrlf = input
