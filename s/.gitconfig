@@ -1,0 +1,9 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Alexander
+	email = alexander@unexpectedeof.net
+[diff]
+	submodule = log
+[core]
+	excludesfile = ~/.gitignore
+	autocrlf = input

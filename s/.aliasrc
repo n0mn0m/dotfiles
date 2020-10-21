@@ -1,0 +1,46 @@
+# Aliases
+alias hist="history 1"
+alias dirs='dirs -v'
+
+alias pd='pushd'
+alias pu='popd'
+
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+alias lbkup="tar -cvf bkup.tar -T .bkup.list"
+alias bkup="sudo rsync -av --files-from=$HOME/.bkup.list $HOME /Volumes/tardis\ 1/backup;"
+
+alias dr="docker-compose down && docker system prune -f && docker-compose up -d"
+
+alias gs='git status -sb'
+alias gv='git log –graph –decorate –oneline –all'
+alias gc='git commit -v'
+alias gl='git log --all --graph --pretty="format:%C(yellow)%h%C(auto)%d%Creset %s %C(white) %C(cyan)%an, %C(magenta)%ar%Creset"'
+alias gsu="git submodule update --init --recursive"
+alias gru="git branch -r | grep -v '\->' | while read remote; do git branch --track ${remote#origin/} $remote; done && git fetch --all && git pull --all && git submodule update --init --recursive"
+alias gprune="pwsh $HOME/projects/dotfiles/s/branchcleanup.ps1"
+
+alias nvenv="function nvenv(){ python3 -m venv ~/.virtualenvs/$1; }; nvenv"
+
+alias markdown="grip"
+
+alias on-air="curl -X PUT 'https://signal.unexpectedeof.casa/on-air'"
+alias status="curl -X GET 'https://signal.unexpectedeof.casa/on-air'"
+
+alias adf="export ADF_PATH=$HOME/projects/esp-adf"
+
+alias idf-who="deactivate && source $HOME/.virtualenvs/who/bin/activate && . $HOME/projects/esp-who/esp-idf/export.sh"
+
+alias idf=". $HOME/projects/esp-idf/export.sh"
+alias id3="pushd $HOME/projects/esp-idf && git checkout release/v3.3 && popd && . $HOME/projects/esp-idf/export.sh"
+alias id4="pushd $HOME/projects/esp-idf && git checkout release/v4.1 && popd && . $HOME/projects/esp-idf/export.sh"
+alias idr="rm -rf $HOME/projects/esp-idf && git clone --recursive git@github.com:espressif/esp-idf.git $HOME/projects/esp-idf && $HOME/projects/esp-idf/install.sh"
+
+alias idt="idf.py --port /dev/cu.SLAB_USBtoUART flash monitor"
+
+# Add an "alert" alias for long running commands.  Use like so:
+# sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
