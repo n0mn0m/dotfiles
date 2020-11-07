@@ -5,7 +5,8 @@ export EDITOR='vim'
 export LANG='en_US.UTF-8'
 
 typeset -U path
-path=(/usr/local/opt/ruby/bin /Applications/Keybase.app/Contents/SharedSupport/bin /Users/n0mn0m/.cargo/bin /Users/n0mn0m/.npm-global/bin /opt/local/bin /opt/local/sbin/ /usr/local/lib/ruby/gems/2.7.0/bin $path)
+
+path=(/Applications/Keybase.app/Contents/SharedSupport/bin /Users/n0mn0m/.cargo/bin /Users/n0mn0m/.npm-global/bin /opt/local/bin /opt/local/sbin/ /Users/n0mn0m/.dotnet/tools /Users/n0mn0m/.gem/ruby/2.6.0/bin /Users/n0mn0m/bin $path)
 
 # Navigation
 setopt AUTO_CD PUSHD_MINUS PUSHD_SILENT
@@ -58,30 +59,14 @@ if [[ -r ~/.aliasrc ]]; then
 	. ~/.aliasrc
 fi
 
+# Directory shortcuts e.g.: ~proj
+hash -d projects=$HOME/projects
+
 # Always work in a virtual environment by default for Python.
 source $HOME/.virtualenvs/38/bin/activate
 export PYTHONBREAKPOINT='pudb.set_trace'
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk13/Contents/Home
 
-# Turn off dotnet telemetry
-export DOTNET_CLI_TELEMETRY_OPTOUT=1
+eval "$(starship init zsh)"
 
-# zsh parameter completion for the dotnet CLI
-
-_dotnet_zsh_complete()
-{
-  local completions=("$(dotnet complete "$words")")
-
-  reply=( "${(ps:\n:)completions}" )
-}
-
-compctl -K _dotnet_zsh_complete dotnet
-
-# source $HOME/projects/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-# zstyle ':autocomplete:*' key-binding off
-# zstyle ':autocomplete:tab:*' completion cycle
-# zstyle ':autocomplete:list-choices:*' min-input 3
-
-# For docker and cross platform compat
-export USERPROFILE=$HOME

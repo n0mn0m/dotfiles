@@ -1,0 +1,21 @@
+# Use custom format
+# format = """
+# [┌───────────────────>](bold green)
+# [│](bold green)$directory$rust$package
+# [└─>](bold green) """
+
+[cmd_duration]
+min_time = 500
+format = "spent [$duration](bold yellow)"
+
+[directory]
+truncation_length = 3
+truncation_symbol = "…/"
+
+[docker_context]
+disabled = false
+
+[status]
+symbol = "👾 "
+format = '[\[$symbol$status\]]($style) '
+disabled = false

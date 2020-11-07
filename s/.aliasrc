@@ -9,25 +9,27 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
-alias lbkup="tar -cvf bkup.tar -T .bkup.list"
-alias bkup="sudo rsync -av --files-from=$HOME/.bkup.list $HOME /Volumes/tardis\ 1/backup;"
-
-alias dr="docker-compose down && docker system prune -f && docker-compose up -d"
+alias backup=".vault/backup.sh"
+alias restore=".vault/restore.sh"
+alias dotfiles="rsync -av --files-from=$HOME/projects/dotfiles/t/.dot.list $HOME $HOME/projects/dotfiles/t;"
 
 alias gs='git status -sb'
-alias gv='git log –graph –decorate –oneline –all'
+alias gv='git log --graph --decorate --oneline --all'
 alias gc='git commit -v'
 alias gl='git log --all --graph --pretty="format:%C(yellow)%h%C(auto)%d%Creset %s %C(white) %C(cyan)%an, %C(magenta)%ar%Creset"'
 alias gsu="git submodule update --init --recursive"
 alias gru="git branch -r | grep -v '\->' | while read remote; do git branch --track ${remote#origin/} $remote; done && git fetch --all && git pull --all && git submodule update --init --recursive"
-alias gprune="pwsh $HOME/projects/dotfile/s/branch-cleanup.ps1"
+
+alias wgu="sudo wg-quick up wg0;"
+alias wgd="sudo wg-quick down wg0;"
 
 alias nvenv="function nvenv(){ python3 -m venv ~/.virtualenvs/$1; }; nvenv"
 
 alias markdown="grip"
 
-alias on-air="curl -X PUT 'https://signal.unexpectedeof.casa/on-air'"
-alias status="curl -X GET 'https://signal.unexpectedeof.casa/on-air'"
+alias on-air="curl -i -X PUT -H "Content-Type: application/json" -d '{"status":1}' https://portal.unexpectedeof.xyz/api/on-air"
+alias off-air="curl -i -X PUT -H "Content-Type: application/json" -d '{"status":0}' 'https://portal.unexpectedeof.xyz/api/on-air'"
+alias air-status="curl -X GET 'https://portal.unexpectedeof.xyz/api/on-air'"
 
 alias adf="export ADF_PATH=$HOME/projects/esp-adf"
 
