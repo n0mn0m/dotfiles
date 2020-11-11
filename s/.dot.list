@@ -1,0 +1,8 @@
+.gitconfig
+.gitignore
+.profile
+.aliasrc
+.zshrc
+.zshenv
+.emacs
+/bin/eshell

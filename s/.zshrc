@@ -1,12 +1,14 @@
 setopt no_beep
 
 bindkey -v
-export EDITOR='vim'
 export LANG='en_US.UTF-8'
+export ALTERNATE_EDITOR=""
+export EDITOR="emacsclient -c"                  # $EDITOR opens in terminal
+export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
+
 
 typeset -U path
-
-path=(/Applications/Keybase.app/Contents/SharedSupport/bin /Users/n0mn0m/.cargo/bin /Users/n0mn0m/.npm-global/bin /opt/local/bin /opt/local/sbin/ /Users/n0mn0m/.dotnet/tools /Users/n0mn0m/.gem/ruby/2.6.0/bin /Users/n0mn0m/bin $path)
+path=(/usr/local/opt/ruby/bin /Applications/Keybase.app/Contents/SharedSupport/bin /Users/n0mn0m/.cargo/bin /Users/n0mn0m/.npm-global/bin /opt/local/bin /opt/local/sbin/ /usr/local/lib/ruby/gems/2.7.0/bin /usr/local/bin /usr/local/sbin $path)
 
 # Navigation
 setopt AUTO_CD PUSHD_MINUS PUSHD_SILENT
@@ -59,14 +61,35 @@ if [[ -r ~/.aliasrc ]]; then
 	. ~/.aliasrc
 fi
 
-# Directory shortcuts e.g.: ~proj
-hash -d projects=$HOME/projects
-
 # Always work in a virtual environment by default for Python.
-source $HOME/.virtualenvs/38/bin/activate
+source $HOME/.virtualenvs/39/bin/activate
 export PYTHONBREAKPOINT='pudb.set_trace'
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk13/Contents/Home
 
-eval "$(starship init zsh)"
+# Turn off dotnet telemetry
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
+# zsh parameter completion for the dotnet CLI
+
+_dotnet_zsh_complete()
+{
+  local completions=("$(dotnet complete "$words")")
+
+  reply=( "${(ps:\n:)completions}" )
+}
+
+compctl -K _dotnet_zsh_complete dotnet
+
+source /Users/alexander/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /Users/alexander/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+fpath=(/Users/alexander/.zsh/zsh-completions/src $fpath)
+
+# For docker and cross platform compat
+export USERPROFILE=$HOME
+
+# AWS complete
+autoload bashcompinit && bashcompinit
+complete -C '/usr/local/bin/aws_completer' aws
+
+eval "$(starship init zsh)"

@@ -1,4 +1,6 @@
 # Aliases
+alias emacs="emacsclient -c -a emacs"
+
 alias hist="history 1"
 alias dirs='dirs -v'
 
@@ -11,7 +13,7 @@ alias l='ls -CF'
 
 alias backup=".vault/backup.sh"
 alias restore=".vault/restore.sh"
-alias dotfiles="rsync -av --files-from=$HOME/projects/dotfiles/t/.dot.list $HOME $HOME/projects/dotfiles/t;"
+alias dotfiles="rsync -av --files-from=$HOME/projects/dotfile/s/.dot.list $HOME $HOME/projects/dotfile/s;"
 
 alias gs='git status -sb'
 alias gv='git log --graph --decorate --oneline --all'
@@ -27,9 +29,9 @@ alias nvenv="function nvenv(){ python3 -m venv ~/.virtualenvs/$1; }; nvenv"
 
 alias markdown="grip"
 
-alias on-air="curl -i -X PUT -H "Content-Type: application/json" -d '{"status":1}' https://portal.unexpectedeof.xyz/api/on-air"
-alias off-air="curl -i -X PUT -H "Content-Type: application/json" -d '{"status":0}' 'https://portal.unexpectedeof.xyz/api/on-air'"
-alias air-status="curl -X GET 'https://portal.unexpectedeof.xyz/api/on-air'"
+alias on-air="curl -i -X PUT -H "Content-Type: application/json" -d '{"status":1}' https://portal.burningdaylight.io/api/on-air"
+alias off-air="curl -i -X PUT -H "Content-Type: application/json" -d '{"status":0}' 'https://portal.burningdaylight.io/api/on-air'"
+alias air-status="curl -X GET 'https://portal.burningdaylight.io/api/on-air'"
 
 alias adf="export ADF_PATH=$HOME/projects/esp-adf"
 

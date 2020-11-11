@@ -15,6 +15,8 @@
 (if (not (file-exists-p --backup-directory))
         (make-directory --backup-directory t))
 
+(server-start)
+
 (setq backup-directory-alist `(("." . ,--backup-directory)))
 
 (setq make-backup-files t               ; backup of a file the first time it is saved.
