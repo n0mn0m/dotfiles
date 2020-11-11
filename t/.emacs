@@ -91,6 +91,8 @@
 	    omnisharp
 	    prescient
 	    projectile
+            python-mode
+            racket-mode
 	    rainbow-delimiters
 	    rust-mode
 	    sql-indent
@@ -250,6 +252,19 @@
 (use-package cargo
   :hook ((rust-mode toml-mode) . cargo-minor-mode))
 
+(use-package racket-mode
+  :mode "\\.rkt\\'"
+  :init
+  (setq font-lock-maximum-decoration 3)
+  (add-hook 'racket-mode-hook
+            (lambda ()
+              (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
+
+(use-package python-mode
+  :mode "\\.py\\'"
+  :init
+  (add-hook 'python-mode-hook #'eglot-ensure))
+
 (use-package toml-mode
   :mode "\\.toml\\'")
 
@@ -274,6 +289,19 @@
            ("\\.md\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode))
     :init (setq markdown-command "multimarkdown"))
+
+
+;; Custom functions
+(defun jc/use-eslint-from-node-modules ()
+    "Set local eslint if available."
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
 
 (set-face-attribute 'default nil
 		     :family "JetBrains Mono"
