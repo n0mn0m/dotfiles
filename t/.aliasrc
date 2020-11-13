@@ -25,11 +25,11 @@ alias wgd="sudo wg-quick down wg0;"
 
 alias nvenv="function nvenv(){ python3 -m venv ~/.virtualenvs/$1; }; nvenv"
 
-alias markdown="grip"
+alias markdown="glow"
 
-alias on-air="curl -i -X PUT -H "Content-Type: application/json" -d '{"status":1}' https://portal.unexpectedeof.xyz/api/on-air"
-alias off-air="curl -i -X PUT -H "Content-Type: application/json" -d '{"status":0}' 'https://portal.unexpectedeof.xyz/api/on-air'"
-alias air-status="curl -X GET 'https://portal.unexpectedeof.xyz/api/on-air'"
+alias on-air="curl -i -X PUT -H 'Content-Type: application/json' -d '{\"status\":1}' https://portal.burningdaylight.io/api/on-air"
+alias off-air="curl -i -X PUT -H 'Content-Type: application/json' -d '{\"status\":0}' https://portal.burningdaylight.io/api/on-air"
+alias air-status="curl -X GET 'https://portal.burningdaylight.io/api/on-air'"
 
 alias adf="export ADF_PATH=$HOME/projects/esp-adf"
 
