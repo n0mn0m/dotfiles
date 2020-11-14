@@ -2,6 +2,10 @@
 alias hist="history 1"
 alias dirs='dirs -v'
 
+alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs'
+
+alias sinit='swift package generate-xcodeproj'
+
 alias pd='pushd'
 alias pu='popd'
 

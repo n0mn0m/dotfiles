@@ -45,40 +45,42 @@
 (require 'package)
 (package-initialize)
 
+(setq load-prefer-newer t)
+
+(setq package-archives
+  '(("melpa" . "https://melpa.org/packages/")
+    ("gnu" . "https://elpa.gnu.org/packages/")
+    ))
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package)
   (eval-when-compile (require 'use-package)))
 
-(setq use-package-always-ensure t)
-
 ;; first, declare repositories
 (use-package package
   :init
-    (setq package-archives
-	  '(("melpa" . "https://melpa.org/packages/")
-	    ("gnu" . "https://elpa.gnu.org/packages/")
-	    ))
     (package-refresh-contents)
-
     ;; Declare packages
     (setq my-packages
-	  '(all-the-icons
+	  '(auto-package-update
+            all-the-icons
 	    async
 	    cargo
 	    company
 	    counsel
 	    csharp-mode
 	    csv-mode
-	    dap-mode
 	    dockerfile-mode
-	    eglot
+            eglot
 	    elfeed
 	    evil
 	    expand-region
 	    exec-path-from-shell
 	    fill-column-indicator
 	    flycheck
+            flycheck-rust
+            fsharp-mode
 	    highlight-escape-sequences
 	    ivy
 	    ivy-hydra
@@ -95,8 +97,10 @@
             racket-mode
 	    rainbow-delimiters
 	    rust-mode
+            soft-morning-theme
 	    sql-indent
 	    toml-mode
+            typescript-mode
 	    use-package
 	    yaml-mode
 	    yasnippet
@@ -106,6 +110,14 @@
     (dolist (pkg my-packages)
       (unless (package-installed-p pkg)
 	(package-install pkg))))
+
+(use-package auto-package-update
+   :ensure t
+   :config
+   (setq auto-package-update-delete-old-versions t
+         auto-package-update-interval 4
+	 use-package-always-ensure t)
+   (auto-package-update-maybe))
 
 (use-package rainbow-delimiters
   :init
@@ -125,10 +137,6 @@
 
 (use-package magit
   :bind ("C-x g" . magit-status))
-
-(use-package git-gutter
-  :config
-  (global-git-gutter-mode 't))
 
 (use-package kaolin-themes
   :init
@@ -150,8 +158,7 @@
   :config ;; tweak evil after loading it
     (evil-mode))
 
-(use-package all-the-icons
-  :ensure t)
+(use-package all-the-icons)
 
 ;; Neotree config
 (use-package neotree
@@ -187,7 +194,6 @@
   (ivy-prescient-mode t))
 
 (use-package company
-  :ensure
   :init
     (add-hook 'after-init-hook 'global-company-mode))
 
@@ -232,9 +238,8 @@
       :fringe-bitmap 'flycheck-fringe-bitmap-ball
       :fringe-face 'flycheck-fringe-info))
 
-(use-package eglot
-  :ensure t
-  :demand)
+(use-package cargo
+  :hook ((rust-mode toml-mode) . cargo-minor-mode))
 
 (use-package csharp-mode
   :mode "\\.cs\\'"
@@ -243,14 +248,14 @@
     (add-to-list 'company-backends 'company-omnisharp)
     (add-hook 'csharp-mode-hook 'company-mode))
 
+(use-package python-mode
+  :mode "\\.py\\'")
+
 (use-package rust-mode
   :mode "\\.rs\\'"
   :init
-  (add-hook 'rust-mode-hook #'eglot-ensure)
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
   :config (setq rust-format-on-save t))
-
-(use-package cargo
-  :hook ((rust-mode toml-mode) . cargo-minor-mode))
 
 (use-package racket-mode
   :mode "\\.rkt\\'"
@@ -260,13 +265,18 @@
             (lambda ()
               (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
 
-(use-package python-mode
-  :mode "\\.py\\'"
-  :init
-  (add-hook 'python-mode-hook #'eglot-ensure))
-
 (use-package toml-mode
   :mode "\\.toml\\'")
+
+(use-package eglot
+  :commands (eglot eglot-ensure)
+  :hook ((python-mode . eglot-ensure)
+         (racket-mode . eglot-ensure)
+         (rust-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure))
+  :config
+  (add-to-list 'eglot-server-programs '(rust-mode "rls")))
+
 
 (use-package elfeed
   :init
@@ -289,7 +299,6 @@
            ("\\.md\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode))
     :init (setq markdown-command "multimarkdown"))
-
 
 ;; Custom functions
 (defun jc/use-eslint-from-node-modules ()

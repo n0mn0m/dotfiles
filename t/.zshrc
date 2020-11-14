@@ -1,12 +1,12 @@
 setopt no_beep
 
 bindkey -v
-export EDITOR='vim'
+export ALTERNATE_EDITOR=""
+export EDITOR="emacsclient -c"                  # $EDITOR opens in GUI mode
+export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
 export LANG='en_US.UTF-8'
 
 typeset -U path
-
-path=(/Applications/Keybase.app/Contents/SharedSupport/bin /Users/n0mn0m/.cargo/bin /Users/n0mn0m/.npm-global/bin /opt/local/bin /opt/local/sbin/ /Users/n0mn0m/.dotnet/tools /Users/n0mn0m/.gem/ruby/2.6.0/bin /Users/n0mn0m/bin $path)
 
 # Navigation
 setopt AUTO_CD PUSHD_MINUS PUSHD_SILENT

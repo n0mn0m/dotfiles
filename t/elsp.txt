@@ -1,0 +1,11 @@
+npm i -g bash-language-server
+npm i -g dockerfile-language-server-nodejs
+npm i -g eslint
+npm i -g typescript
+npm i -g typescript-language-server
+npm i -g vscode-json-languageserver
+npm i -g yaml-language-server
+raco pkg install racket-langserver
+pip install hdl-checker --upgrade
+pip install -U jedi-language-server
+

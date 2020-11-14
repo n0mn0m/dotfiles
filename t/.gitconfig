@@ -1,14 +1,18 @@
-# This is Git's per-user configuration file.
 [user]
-# Please adapt and uncomment the following lines:
-	name = n0mn0m
-	email = alexander@unexpectedeof.net
-	signingkey = EB589747BCEE2FD1
+  name = n0mn0m
+  email = n0mn0m@burningdaylight.io
+  signingkey = EB589747BCEE2FD1
+
+[color]
+  ui = auto
 
 [diff]
-	submodule = log
+  submodule = log
+
 [core]
-	autocrlf = input
-	excludesFile = ~/.gitignore
+  autocrlf = input
+  excludesFile = ~/.gitignore
+  editor = "emacsclient -c"
+
 [init]
-	defaultBranch = main
+  defaultBranch = main
