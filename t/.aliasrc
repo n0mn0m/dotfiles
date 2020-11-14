@@ -3,6 +3,7 @@ alias hist="history 1"
 alias dirs='dirs -v'
 
 alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs'
+alias repos='ssh git@git.burningdaylight.io'
 
 alias sinit='swift package generate-xcodeproj'
 
