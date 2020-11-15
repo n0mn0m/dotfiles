@@ -80,6 +80,7 @@
 	    fill-column-indicator
 	    flycheck
             flycheck-rust
+            flycheck-swift
             fsharp-mode
 	    highlight-escape-sequences
 	    ivy
@@ -99,6 +100,9 @@
 	    rust-mode
             soft-morning-theme
 	    sql-indent
+            swift-helpful
+            swift-mode
+            swift-playground-mode
 	    toml-mode
             typescript-mode
 	    use-package
@@ -265,6 +269,18 @@
             (lambda ()
               (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
 
+(use-package swift-mode
+  :mode "\\.swift\\'"
+  :init
+  (setq flycheck-swift-sdk-path "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.2.sdk")
+  (setq flycheck-swift-target "arm64-apple-ios14")
+  (eval-after-load 'flycheck '(flycheck-swift-setup)))
+
+(use-package swift-playground-mode
+  :defer t :init
+  (autoload 'swift-playground-global-mode "swift-playground-mode" nil t)
+  (add-hook 'swift-mode-hook #'swift-playground-global-mode))
+
 (use-package toml-mode
   :mode "\\.toml\\'")
 
@@ -273,9 +289,12 @@
   :hook ((python-mode . eglot-ensure)
          (racket-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
+         (swift-mode . eglot-ensure)
          (typescript-mode . eglot-ensure))
   :config
-  (add-to-list 'eglot-server-programs '(rust-mode "rls")))
+  (add-to-list 'eglot-server-programs '(rust-mode . ("rls")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+  (add-to-list 'eglot-server-programs '(swift-mode . ("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))))
 
 
 (use-package elfeed
