@@ -5,5 +5,7 @@
 .zshrc
 .zshenv
 .emacs
+.emacs.d/custom.el
+.emacs.d/lisp
 .ideavimrc
 /bin/eshell
