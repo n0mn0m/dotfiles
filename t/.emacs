@@ -371,7 +371,7 @@
 (use-package org
   :hook ((org-mode . visual-line-mode))
   :custom
-  (org-directory "~/Library/Mobile Documents/com\~apple\~CloudDocs/org")
+  (org-directory "~/Library/Mobile Documents/com\~apple\~CloudDocs/beorg/org")
   (org-default-notes-file (concat org-directory "/notes.org"))
   (org-return-follows-link t)
   :config
