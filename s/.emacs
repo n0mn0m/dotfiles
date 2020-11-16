@@ -1,23 +1,32 @@
 ;;; start config
 
 (setq default-directory (getenv "HOME"))
-
 (setenv "ESHELL" (expand-file-name "~/bin/eshell"))
 
-;; Enable built in line numbers
-(when (version<= "26.0.50" emacs-version )
-  (global-display-line-numbers-mode))
-;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(global-display-line-numbers-mode)
+(global-visual-line-mode 1)
+(column-number-mode)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+
+;; Configure encoding
+(set-charset-priority 'unicode)
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq default-process-coding-system '(utf-8-unix . utf-8-unix))
 
 ;; Configure backups
 (defvar --backup-directory (concat (getenv "HOME") "/.emacs.d/backups"))
-
 (if (not (file-exists-p --backup-directory))
         (make-directory --backup-directory t))
 
-(server-start)
-
-(setq backup-directory-alist `(("." . ,--backup-directory)))
+(custom-set-variables
+    '(backup-directory-alist
+      `(("." . ,(concat user-emacs-directory "backups")))))
 
 (setq make-backup-files t               ; backup of a file the first time it is saved.
       backup-by-copying t               ; don't clobber symlinks
@@ -31,73 +40,96 @@
       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
 )
 
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+(setq
+   inhibit-startup-screen t
+   initial-scratch-message nil
+   sentence-end-double-space nil
+   ring-bell-function 'ignore
+   ;; Prompts should go in the minibuffer, not in a GUI.
+   use-dialog-box nil
+   ;; Fix undo in commands affecting the mark.
+   mark-even-if-inactive nil
+   ;; search case-sensitive by default
+   case-fold-search nil
+   ;; no hard tabs
+   indent-tabs-mode nil)
 
-(setq inhibit-startup-screen t)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-(global-visual-line-mode 1)
-(setq-default indent-tabs-mode nil)
+(defalias 'yes-or-no-p 'y-or-n-p) ; Accept 'y' in lieu of 'yes'.
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(setq require-final-newline t)
 
-(setq ring-bell-function 'ignore)
-(defalias 'yes-or-no-p 'y-or-n-p)
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
 
 ;; Init the package facility
 (require 'package)
 (package-initialize)
+(setq load-prefer-newer t)
+(custom-set-variables '(use-package-verbose nil))
+
+(setq package-archives
+  '(("melpa" . "https://melpa.org/packages/")
+    ("gnu" . "https://elpa.gnu.org/packages/")
+    ))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package)
   (eval-when-compile (require 'use-package)))
 
-(setq use-package-always-ensure t)
-
 ;; first, declare repositories
 (use-package package
   :init
-    (setq package-archives
-	  '(("melpa" . "https://melpa.org/packages/")
-	    ("gnu" . "https://elpa.gnu.org/packages/")
-	    ))
     (package-refresh-contents)
-
     ;; Declare packages
     (setq my-packages
-	  '(all-the-icons
+	  '(auto-package-update
+            all-the-icons
 	    async
 	    cargo
 	    company
 	    counsel
 	    csharp-mode
 	    csv-mode
-	    dap-mode
 	    dockerfile-mode
-	    eglot
+            eglot
 	    elfeed
 	    evil
 	    expand-region
 	    exec-path-from-shell
 	    fill-column-indicator
 	    flycheck
+            flycheck-rust
+            flycheck-swift
+            fsharp-mode
 	    highlight-escape-sequences
 	    ivy
 	    ivy-hydra
 	    json-mode
 	    kaolin-themes
+            keychain-environment
 	    magit
 	    markdown-mode
 	    neotree
 	    org
+            org-journal
 	    omnisharp
 	    prescient
 	    projectile
+            python-mode
+            racket-mode
 	    rainbow-delimiters
 	    rust-mode
+            soft-morning-theme
 	    sql-indent
+            swift-helpful
+            swift-mode
+            swift-playground-mode
 	    toml-mode
+            typescript-mode
 	    use-package
+            which-key
 	    yaml-mode
 	    yasnippet
 	    ))
@@ -106,6 +138,22 @@
     (dolist (pkg my-packages)
       (unless (package-installed-p pkg)
 	(package-install pkg))))
+
+(use-package auto-package-update
+   :ensure t
+   :config
+   (setq auto-package-update-delete-old-versions t
+         auto-package-update-interval 4
+	 use-package-always-ensure t)
+   (auto-package-update-maybe))
+
+(use-package auto-compile
+  :defer nil
+  :config (auto-compile-on-load-mode))
+
+(use-package keychain-environment
+  :config
+  (keychain-refresh-environment))
 
 (use-package rainbow-delimiters
   :init
@@ -125,10 +173,6 @@
 
 (use-package magit
   :bind ("C-x g" . magit-status))
-
-(use-package git-gutter
-  :config
-  (global-git-gutter-mode 't))
 
 (use-package kaolin-themes
   :init
@@ -150,8 +194,7 @@
   :config ;; tweak evil after loading it
     (evil-mode))
 
-(use-package all-the-icons
-  :ensure t)
+(use-package all-the-icons)
 
 ;; Neotree config
 (use-package neotree
@@ -186,8 +229,15 @@
   :config
   (ivy-prescient-mode t))
 
+(use-package which-key
+  :custom
+  (which-key-setup-side-window-bottom)
+  (which-key-enable-extended-define-key t)
+  (which-key-idle-delay 1.2)
+  :config
+  (which-key-setup-minibuffer))
+
 (use-package company
-  :ensure
   :init
     (add-hook 'after-init-hook 'global-company-mode))
 
@@ -232,9 +282,11 @@
       :fringe-bitmap 'flycheck-fringe-bitmap-ball
       :fringe-face 'flycheck-fringe-info))
 
-(use-package eglot
-  :ensure t
-  :demand)
+(use-package dash-at-point
+  :bind ("C-c d" . dash-at-point))
+
+(use-package cargo
+  :hook ((rust-mode toml-mode) . cargo-minor-mode))
 
 (use-package csharp-mode
   :mode "\\.cs\\'"
@@ -243,17 +295,56 @@
     (add-to-list 'company-backends 'company-omnisharp)
     (add-hook 'csharp-mode-hook 'company-mode))
 
+(use-package markdown-mode
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+
+(use-package python-mode
+  :mode "\\.py\\'")
+
 (use-package rust-mode
   :mode "\\.rs\\'"
   :init
-  (add-hook 'rust-mode-hook #'eglot-ensure)
+  (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
   :config (setq rust-format-on-save t))
 
-(use-package cargo
-  :hook ((rust-mode toml-mode) . cargo-minor-mode))
+(use-package racket-mode
+  :mode "\\.rkt\\'"
+  :init
+  (setq font-lock-maximum-decoration 3)
+  (add-hook 'racket-mode-hook
+            (lambda ()
+              (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
+
+(use-package swift-mode
+  :mode "\\.swift\\'"
+  :init
+  (setq flycheck-swift-sdk-path "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.2.sdk")
+  (setq flycheck-swift-target "arm64-apple-ios14")
+  (eval-after-load 'flycheck '(flycheck-swift-setup)))
+
+(use-package swift-playground-mode
+  :defer t :init
+  (autoload 'swift-playground-global-mode "swift-playground-mode" nil t)
+  (add-hook 'swift-mode-hook 'swift-playground-global-mode))
 
 (use-package toml-mode
   :mode "\\.toml\\'")
+
+(use-package eglot
+  :commands (eglot eglot-ensure)
+  :hook ((python-mode . eglot-ensure)
+         (racket-mode . eglot-ensure)
+         (rust-mode . eglot-ensure)
+         (swift-mode . eglot-ensure)
+         (typescript-mode . eglot-ensure))
+  :config
+  (add-to-list 'eglot-server-programs '(rust-mode . ("rls")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+  (add-to-list 'eglot-server-programs '(swift-mode . ("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))))
 
 (use-package elfeed
   :init
@@ -270,12 +361,36 @@
 
 (use-package yasnippet-snippets)
 
-(use-package markdown-mode
-    :commands (markdown-mode gfm-mode)
-    :mode (("README\\.md\\'" . gfm-mode)
-           ("\\.md\\'" . markdown-mode)
-           ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "multimarkdown"))
+(use-package projectile
+  :diminish
+  :bind (("C-c k" . 'projectile-kill-buffers)
+  ("C-c M" . 'projectile-compile-project))
+  :custom (projectile-completion-system 'ivy)
+  :config (projectile-mode))
+
+;; Org
+(use-package org
+  :hook ((org-mode . visual-line-mode))
+  :custom
+  (org-directory "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org")
+  (org-default-notes-file (concat org-directory "/notes.org"))
+  (org-return-follows-link t)
+  :config
+  (defun org-mode-insert-code ()
+    "Like markdown-insert-code, but for org instead."
+    (interactive)
+    (org-emphasize ?~))
+  (defun tufte-css-numeralify (with-underscores)
+    "Express the provided underscore-grouped numeral quantity in old-style capitals."
+    ;; e.g. 10_000_000 becomes 10,000,000 (except fancy in the browser)
+    (format
+     "@@html:<span class=\"numeral\">%s</span>@@"
+     (replace-regexp-in-string "_" "," with-underscores))))
+
+(use-package org-journal
+  :defer t
+  :config
+  (setq org-journal-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"))
 
 ;; Custom functions
 (defun jc/use-eslint-from-node-modules ()
@@ -288,6 +403,13 @@
                                           root))))
       (when (and eslint (file-executable-p eslint))
         (setq-local flycheck-javascript-eslint-executable eslint))))
+
+(defun switch-to-scratch-buffer ()
+  "Switch to the current session's scratch buffer."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
+
+(bind-key "C-c a s" 'switch-to-scratch-buffer)
 
 (set-face-attribute 'default nil
 		     :family "JetBrains Mono"
