@@ -1,0 +1,28 @@
+* New Service Setup [0%]
+%^{Project}p
+
+- [ ] Setup secret manager pipeline
+    - [ ] Setup new variable groups (optional)
+    - [ ] Add new secrets to existing groups (optional)
+- [ ] Setup repo and project template
+    - [ ] Validate healthcheck can be reached and runtime startup is clean
+- [ ] Setup auth
+    - [ ] Validate jwt and user access
+- [ ] Setup pipeline
+    - [ ] Setup build/dev deployment pipeline
+        - [ ] Setup port  in cloudformation template
+        - [ ] Setup load balancer listener global rule in cloudformation template
+    - [ ] Setup stage deployment
+    - [ ] Setup prod deployment
+    - [ ] Setup end to end pipeline
+    - [ ] Validate deployments
+    - [ ] Update [API by Domain](https://dev.azure.com/samtec/_git/Architecture?path=%2FApis%20By%20Domain.md&_a=preview)
+- [ ] Setup repo branch policies
+    - [ ] Add slack azure pipeline alerts in team-ops-2-ci-cd and team-ops-2-pr
+- [ ] Add test project
+    - [ ] Add containers (recommended)
+    - [ ] Setup test dependency injection
+- [ ] Setup slack alerts
+    - [ ] Elastic
+    - [ ] AWS
+- [ ] Fix resharper inspection warnings

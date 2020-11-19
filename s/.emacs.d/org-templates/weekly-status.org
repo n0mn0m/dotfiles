@@ -1,0 +1,20 @@
+* EA Weekly Status Update
+Alexander Hagerman - Status %(org-insert-time-stamp (org-read-date nil t "-6d")) - %(org-insert-time-stamp (org-read-date nil t "+0d"))
+Week of %(org-insert-time-stamp (org-read-date nil t "-6d")) - %(org-insert-time-stamp (org-read-date nil t "+0d"))
+  - External
+    - AMS
+    - EA
+
+  - Internal
+    - AMS
+    - EA
+
+Upcoming Week of %(org-insert-time-stamp (org-read-date nil t "+1d")) - %(org-insert-time-stamp (org-read-date nil t "+7d"))
+
+  - External
+    - AMS
+    - EA
+
+  - Internal
+    - AMS
+    - EA

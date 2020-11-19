@@ -5,4 +5,6 @@
 .zshrc
 .zshenv
 .emacs
+.emacs.d/custom.el
+.emacs.d/org-templates/
 /bin/eshell

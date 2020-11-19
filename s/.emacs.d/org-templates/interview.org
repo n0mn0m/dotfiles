@@ -1,0 +1,23 @@
+* Interview
+%^{Candidate}p
+%(org-insert-time-stamp (org-read-date nil t "+0d"))
+
+*Technical*
+  - [ ] What is the benefit of different style databases being available
+  - [ ] What is the difference between concurrent code and parallel code?
+  - [ ] Docs
+
+*Personal*
+  - [ ] How do you approach keeping up to date and learning something new? 
+  - [ ] What is a technology, language or project you are excited about?
+      - [ ] What is it good at?
+      - [ ] What is it bad at?
+
+*Team*
+  - [ ] What has you interested in this team and role?
+  - [ ] What type of software/project work do you enjoy the most?
+  - [ ] What are some of the development methodologies you have enjoyed on prior teams and projects?
+  - [ ] What's the best project you have worked on?
+
+*Debug*
+  - [ ] Tell me about a time you brought a system down and how you went about recovery?

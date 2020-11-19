@@ -1,0 +1,14 @@
+* PR Review [0%]
+%^{PR}p %^{Project}p
+
+- [ ] No dead code
+- [ ] commit ELI5
+- [ ] API/UI functionality confirmed in dev
+- [ ] Data validation
+- [ ] Meets task/story requirements
+- [ ] Test present
+
+- [ ] Extras 
+  - [ ] Questions
+  - [ ] Notes
+  - [ ] Artifacts
