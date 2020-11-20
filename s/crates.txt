@@ -1,0 +1,10 @@
+cargo-edit v0.7.0:
+    cargo-add
+    cargo-rm
+    cargo-upgrade
+dwfv v0.4.1:
+    dwfv
+oha v0.4.4:
+    oha
+serial-monitor v0.0.5:
+    serial-monitor

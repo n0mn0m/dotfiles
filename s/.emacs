@@ -1,4 +1,8 @@
-;;; start config
+;;; emacs --- base config
+;;; Commentary:
+;;; My custom config, package management, mode config and functions.
+
+;;; Code:
 (setq user-full-name "Alexander Hagerman"
       user-mail-address "alexander@burningdaylight.io")
 
@@ -275,6 +279,12 @@
     (add-to-list 'company-backends 'company-omnisharp)
     (add-hook 'csharp-mode-hook 'company-mode))
 
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
+
+(use-package docker-compose-mode
+  :mode "docker-compose\\'")
+
 (use-package fsharp-mode
   :defer t
   :config
@@ -284,24 +294,36 @@
   (add-hook 'fsharp-mode-hook 'highlight-indentation-mode))
 
 (use-package markdown-mode
-    :commands (markdown-mode gfm-mode)
-    :mode (("README\\.md\\'" . gfm-mode)
-           ("\\.md\\'" . markdown-mode)
-           ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "multimarkdown"))
+  :defer t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
+(use-package plantuml-mode
+  :defer t
+  :mode "\\.plantuml\\'"
+  :init
+  (setq plantuml-executable-path "/usr/local/bin/plantuml")
+  (setq plantuml-default-exec-mode 'executable))
 
 (use-package python-mode
+  :defer t
   :mode "\\.py\\'")
 
-(use-package flycheck-rust)
+(use-package flycheck-rust
+  :defer t)
 
 (use-package rust-mode
+  :defer t
   :mode "\\.rs\\'"
   :init
   (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
   :config (setq rust-format-on-save t))
 
 (use-package racket-mode
+  :defer t
   :mode "\\.rkt\\'"
   :init
   (setq font-lock-maximum-decoration 3)
@@ -332,6 +354,11 @@
 
 (use-package toml-mode
   :mode "\\.toml\\'")
+
+(use-package yaml-mode
+  :defer t
+  :mode ("\\.yaml\\'" "\\.yml\\'")
+  :bind ("\C-m" . 'newline-and-indent))
 
 (use-package eglot
   :commands (eglot eglot-ensure)
@@ -419,7 +446,6 @@
   :bind ("C-x p i" . org-cliplink))
 
 (use-package org-journal
-  :defer t
   :config
   (setq org-journal-file-format "%Y%m%d.org")
   (setq org-journal-date-prefix "#+TITLE: Daily Notes ")
@@ -437,7 +463,6 @@
   (lambda () (interactive) (org-capture nil "p")))
 (define-key global-map (kbd "C-c j s")
   (lambda () (interactive) (org-capture nil "s")))
-
 
 
 ;; Custom functions - TODO move to custom.el
