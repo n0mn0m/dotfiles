@@ -4,6 +4,7 @@
 .aliasrc
 .zshrc
 .zshenv
+.vimrc
 .emacs
 .emacs.d/custom.el
 .emacs.d/org-templates/

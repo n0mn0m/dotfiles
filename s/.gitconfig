@@ -8,3 +8,5 @@
 	excludesfile = ~/.gitignore
 	autocrlf = input
 	editor = vim
+[init]
+	defaultBranch = main

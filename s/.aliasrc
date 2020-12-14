@@ -4,6 +4,7 @@ alias dirs='dirs -v'
 
 alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs'
 alias repos='ssh git@git.burningdaylight.io'
+alias journal='cd ~/Library/Mobile\ Documents/iCloud\~com\~appsonthemove\~beorg/Documents/org/'
 
 alias sinit='swift package generate-xcodeproj'
 
@@ -16,7 +17,7 @@ alias l='ls -CF'
 
 alias backup=".vault/backup.sh"
 alias restore=".vault/restore.sh"
-alias dotfiles="rsync -av --files-from=$HOME/projects/dotfile/s/.dot.list $HOME $HOME/projects/dotfile/s;"
+alias dotfiles="rsync -av --files-from=$HOME/Projects/dotfile/s/.dot.list $HOME $HOME/Projects/dotfile/s;"
 
 alias gs='git status -sb'
 alias gv='git log --graph --decorate --oneline --all'
@@ -24,6 +25,7 @@ alias gc='git commit -v'
 alias gl='git log --all --graph --pretty="format:%C(yellow)%h%C(auto)%d%Creset %s %C(white) %C(cyan)%an, %C(magenta)%ar%Creset"'
 alias gsu="git submodule update --init --recursive"
 alias gru="git branch -r | grep -v '\->' | while read remote; do git branch --track ${remote#origin/} $remote; done && git fetch --all && git pull --all && git submodule update --init --recursive"
+alias gprune="$HOME/Projects/dotfile/s/branch-cleanup.ps1"
 
 alias wgu="sudo wg-quick up wg0;"
 alias wgd="sudo wg-quick down wg0;"
@@ -36,14 +38,14 @@ alias on-air="curl -i -X PUT -H 'Content-Type: application/json' -d '{\"status\"
 alias off-air="curl -i -X PUT -H 'Content-Type: application/json' -d '{\"status\":0}' https://portal.burningdaylight.io/api/on-air"
 alias air-status="curl -X GET 'https://portal.burningdaylight.io/api/on-air'"
 
-alias adf="export ADF_PATH=$HOME/projects/esp-adf"
+alias adf="export ADF_PATH=$HOME/Projects/esp-adf"
 
-alias idf-who="deactivate && source $HOME/.virtualenvs/who/bin/activate && . $HOME/projects/esp-who/esp-idf/export.sh"
+alias idf-who="deactivate && source $HOME/.virtualenvs/who/bin/activate && . $HOME/Projects/esp-who/esp-idf/export.sh"
 
-alias idf=". $HOME/projects/esp-idf/export.sh"
-alias id3="pushd $HOME/projects/esp-idf && git checkout release/v3.3 && popd && . $HOME/projects/esp-idf/export.sh"
-alias id4="pushd $HOME/projects/esp-idf && git checkout release/v4.1 && popd && . $HOME/projects/esp-idf/export.sh"
-alias idr="rm -rf $HOME/projects/esp-idf && git clone --recursive git@github.com:espressif/esp-idf.git $HOME/projects/esp-idf && $HOME/projects/esp-idf/install.sh"
+alias idf=". $HOME/Projects/esp-idf/export.sh"
+alias id3="pushd $HOME/Projects/esp-idf && git checkout release/v3.3 && popd && . $HOME/Projects/esp-idf/export.sh"
+alias id4="pushd $HOME/Projects/esp-idf && git checkout release/v4.1 && popd && . $HOME/Projects/esp-idf/export.sh"
+alias idr="rm -rf $HOME/Projects/esp-idf && git clone --recursive git@github.com:espressif/esp-idf.git $HOME/Projects/esp-idf && $HOME/Projects/esp-idf/install.sh"
 
 alias idt="idf.py --port /dev/cu.SLAB_USBtoUART flash monitor"
 

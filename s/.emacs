@@ -383,6 +383,8 @@
 
 ;; Org
 (setq sentence-end-double-space nil)
+(setq-default org-display-custom-times t)
+(setq org-time-stamp-custom-formats '("<%Y %b %d>" . "<%Y %b %d %Y %H:%M>"))
 (defvar my-org-journal-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/")
 (defvar formatted-today (format-time-string "%Y%m%d"))
 (defvar todays-journal (concat my-org-journal-dir formatted-today ".org"))
