@@ -8,7 +8,7 @@ export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
 
 
 typeset -U path
-path=(/usr/local/opt/ruby/bin /Users/n0mn0m/.cargo/bin /Users/n0mn0m/.npm-global/bin /opt/local/bin /opt/local/sbin/ /usr/local/lib/ruby/gems/2.7.0/bin /usr/local/bin /usr/local/sbin /usr/local/opt/openjdk/bin $path)
+path=(/usr/local/opt/openjdk/bin /usr/local/opt/ruby/bin /Users/n0mn0m/.cargo/bin /Users/n0mn0m/.npm-global/bin /opt/local/bin /opt/local/sbin/ /usr/local/lib/ruby/gems/2.7.0/bin /usr/local/bin /usr/local/sbin /usr/local/opt/openjdk/bin $path)
 
 # Navigation
 setopt AUTO_CD PUSHD_MINUS PUSHD_SILENT
