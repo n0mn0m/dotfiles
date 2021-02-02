@@ -64,13 +64,17 @@ hash -d projects=$HOME/projects
 
 # Always work in a virtual environment by default for Python.
 source $HOME/.virtualenvs/39/bin/activate
-export PYTHONBREAKPOINT='pudb.set_trace'
+export PYTHONBREAKPOINT='ipdb.set_trace'
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk13/Contents/Home
+
+autoload bashcompinit && bashcompinit
+complete -C '/usr/local/bin/aws_completer' aws
 
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fpath=(~/.zsh/zsh-completions/src $fpath)
 
 eval "$(starship init zsh)"
+
 
