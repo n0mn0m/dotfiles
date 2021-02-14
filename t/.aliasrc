@@ -2,10 +2,13 @@
 alias hist="history 1"
 alias dirs='dirs -v'
 
-alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs'
-alias repos='ssh git@git.burningdaylight.io'
+alias archive="tar -cvf bkup.tar -T .bkup.tar.list"
+alias backup="$HOME/bin/backup.sh"
+alias dotfiles="rsync -av --files-from=$HOME/projects/dotfiles/t/.dot.list $HOME $HOME/projects/dotfiles/t;"
+alias local_backup="archive; sudo rsync -av --files-from=$HOME/.bkup.list $HOME /Volumes/holocron/backup; rm bkup.tar"
+alias restore="$HOME/bin/restore.sh"
 
-alias sinit='swift package generate-xcodeproj'
+alias repos='ssh git@git.burningdaylight.io'
 
 alias pd='pushd'
 alias pu='popd'
@@ -13,10 +16,6 @@ alias pu='popd'
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-
-alias backup=".vault/backup.sh"
-alias restore=".vault/restore.sh"
-alias dotfiles="rsync -av --files-from=$HOME/projects/dotfiles/t/.dot.list $HOME $HOME/projects/dotfiles/t;"
 
 alias gs='git status -sb'
 alias gv='git log --graph --decorate --oneline --all'
@@ -29,8 +28,6 @@ alias wgu="sudo wg-quick up wg0;"
 alias wgd="sudo wg-quick down wg0;"
 
 alias nvenv="function nvenv(){ python3 -m venv ~/.virtualenvs/$1; }; nvenv"
-
-alias markdown="glow"
 
 alias on-air="curl -i -X PUT -H 'Content-Type: application/json' -d '{\"status\":1}' https://portal.burningdaylight.io/api/on-air"
 alias off-air="curl -i -X PUT -H 'Content-Type: application/json' -d '{\"status\":0}' https://portal.burningdaylight.io/api/on-air"
