@@ -40,7 +40,7 @@
       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
 )
 
-(setq
+(setq-default
    inhibit-startup-screen t
    initial-scratch-message nil
    sentence-end-double-space nil
@@ -83,6 +83,7 @@
   :init
     (package-refresh-contents)
     ;; Declare packages
+    (defvar my-packages)
     (setq my-packages
 	  '(auto-package-update
             all-the-icons
@@ -90,19 +91,20 @@
 	    cargo
 	    company
 	    counsel
-	    csharp-mode
 	    csv-mode
 	    dockerfile-mode
             eglot
-	    elfeed
 	    evil
 	    expand-region
 	    exec-path-from-shell
 	    fill-column-indicator
 	    flycheck
+            flycheck-aspell
+            flycheck-inline
+            flycheck-projectile
             flycheck-rust
-            flycheck-swift
-            fsharp-mode
+            flycheck-yamllint
+            ggtags
 	    highlight-escape-sequences
 	    ivy
 	    ivy-hydra
@@ -113,24 +115,20 @@
 	    markdown-mode
 	    neotree
 	    org
-	    omnisharp
 	    prescient
 	    projectile
             python-mode
             racket-mode
 	    rainbow-delimiters
 	    rust-mode
-            soft-morning-theme
 	    sql-indent
-            swift-helpful
-            swift-mode
-            swift-playground-mode
 	    toml-mode
             typescript-mode
 	    use-package
             which-key
 	    yaml-mode
 	    yasnippet
+            yasnippet-snippets
 	    ))
 
     ;; Iterate on packages and install missing ones
@@ -243,7 +241,6 @@
 (use-package flycheck
   :config
     (add-hook 'after-init-hook 'global-flycheck-mode)
-    (add-hook 'flycheck-mode-hook 'jc/use-eslint-from-node-modules)
     (add-to-list 'flycheck-checkers 'proselint)
     (setq-default flycheck-highlighting-mode 'lines)
     ;; Define fringe indicator / warning levels
@@ -281,18 +278,43 @@
       :fringe-bitmap 'flycheck-fringe-bitmap-ball
       :fringe-face 'flycheck-fringe-info))
 
+(use-package flycheck-aspell
+  :defer t
+  :init
+  (progn
+    (eval-after-load 'flycheck
+      (add-to-list 'flycheck-checkers 'tex-aspell-dynamic)))
+  :config
+  (setq ispell-dictionary "some_dictionary")
+  (setq ispell-program-name "aspell")
+  (setq ispell-silently-savep t))
+
+(use-package flycheck-inline
+  :defer t
+  :init
+  (progn
+    (eval-after-load 'flycheck
+      (add-hook 'flycheck-mode-hook #'flycheck-inline-mode))))
+
+(use-package flycheck-yamllint
+  :defer t
+  :init
+  (progn
+    (eval-after-load 'flycheck
+      '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
+
 (use-package dash-at-point
   :bind ("C-c d" . dash-at-point))
 
+(use-package ggtags
+  :config
+    (add-hook 'c-mode-common-hook
+    (lambda ()
+    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+          (ggtags-mode 1)))))
+
 (use-package cargo
   :hook ((rust-mode toml-mode) . cargo-minor-mode))
-
-(use-package csharp-mode
-  :mode "\\.cs\\'"
-  :init
-    (add-hook 'csharp-mode-hook 'omnisharp-mode)
-    (add-to-list 'company-backends 'company-omnisharp)
-    (add-hook 'csharp-mode-hook 'company-mode))
 
 (use-package markdown-mode
     :commands (markdown-mode gfm-mode)
@@ -318,18 +340,6 @@
             (lambda ()
               (define-key racket-mode-map (kbd "<f5>") 'racket-run))))
 
-(use-package swift-mode
-  :mode "\\.swift\\'"
-  :init
-  (setq flycheck-swift-sdk-path "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.2.sdk")
-  (setq flycheck-swift-target "arm64-apple-ios14")
-  (eval-after-load 'flycheck '(flycheck-swift-setup)))
-
-(use-package swift-playground-mode
-  :defer t :init
-  (autoload 'swift-playground-global-mode "swift-playground-mode" nil t)
-  (add-hook 'swift-mode-hook 'swift-playground-global-mode))
-
 (use-package toml-mode
   :mode "\\.toml\\'")
 
@@ -338,27 +348,15 @@
   :hook ((python-mode . eglot-ensure)
          (racket-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
-         (swift-mode . eglot-ensure)
          (typescript-mode . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs '(rust-mode . ("rls")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
-  (add-to-list 'eglot-server-programs '(swift-mode . ("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))))
-
-(use-package elfeed
-  :init
-    (setq elfeed-feeds
-	  '("http://planet.emacsen.org/atom.xml"
-	    "https://blog.acolyer.org/feed/"
-	    "http://worrydream.com/feed.xml"
-	    "https://lobste.rs/rss")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server"))))
 
 (use-package yasnippet
       :config
       (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
       (yas-global-mode 1))
-
-(use-package yasnippet-snippets)
 
 (use-package projectile
   :diminish
@@ -387,17 +385,6 @@
      (replace-regexp-in-string "_" "," with-underscores))))
 
 ;; Custom functions
-(defun jc/use-eslint-from-node-modules ()
-    "Set local eslint if available."
-    (let* ((root (locate-dominating-file
-                  (or (buffer-file-name) default-directory)
-                  "node_modules"))
-           (eslint (and root
-                        (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                          root))))
-      (when (and eslint (file-executable-p eslint))
-        (setq-local flycheck-javascript-eslint-executable eslint))))
-
 (defun switch-to-scratch-buffer ()
   "Switch to the current session's scratch buffer."
   (interactive)

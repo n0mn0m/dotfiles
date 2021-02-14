@@ -73,7 +73,6 @@ complete -C '/usr/local/bin/aws_completer' aws
 
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fpath=(~/.zsh/zsh-completions/src $fpath)
 
 eval "$(starship init zsh)"
 
