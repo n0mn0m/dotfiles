@@ -4,7 +4,7 @@ alias dirs='dirs -v'
 
 alias archive="tar -cvf bkup.tar -T .bkup.tar.list"
 alias backup="$HOME/bin/backup.sh"
-alias dotfiles="rsync -av --files-from=$HOME/projects/dotfiles/t/.dot.list $HOME $HOME/projects/dotfiles/t;"
+alias dotfiles="rsync -av --files-from=$HOME/.dot.list $HOME $HOME/projects/dotfiles/t;"
 alias local_backup="archive; sudo rsync -av --files-from=$HOME/.bkup.list $HOME /Volumes/holocron/backup; rm bkup.tar"
 alias restore="$HOME/bin/restore.sh"
 

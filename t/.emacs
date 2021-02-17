@@ -117,7 +117,6 @@
 	    org
 	    prescient
 	    projectile
-            python-mode
             racket-mode
 	    rainbow-delimiters
 	    rust-mode
@@ -241,7 +240,7 @@
 (use-package flycheck
   :config
     (add-hook 'after-init-hook 'global-flycheck-mode)
-    (add-to-list 'flycheck-checkers 'proselint)
+    (add-to-list 'flycheck-checkers 'proselint 'tex-aspell-dynamic)
     (setq-default flycheck-highlighting-mode 'lines)
     ;; Define fringe indicator / warning levels
     (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
@@ -279,11 +278,6 @@
       :fringe-face 'flycheck-fringe-info))
 
 (use-package flycheck-aspell
-  :defer t
-  :init
-  (progn
-    (eval-after-load 'flycheck
-      (add-to-list 'flycheck-checkers 'tex-aspell-dynamic)))
   :config
   (setq ispell-dictionary "some_dictionary")
   (setq ispell-program-name "aspell")
@@ -316,15 +310,22 @@
 (use-package cargo
   :hook ((rust-mode toml-mode) . cargo-minor-mode))
 
+(add-hook 'python-mode (lambda () 
+  (setq-local
+    python-shell-interpreter "ipython"
+    python-shell-interpreter-args "--colors=Linux --profile=default"
+    python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+    python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+    python-shell-completion-setup-code "from IPython.core.completerlib import module_completion"
+    python-shell-completion-module-string-code "';'.join(module_completion('''%s'''))\n"
+    python-shell-completion-string-code "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")))
+
 (use-package markdown-mode
     :commands (markdown-mode gfm-mode)
     :mode (("README\\.md\\'" . gfm-mode)
            ("\\.md\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode))
     :init (setq markdown-command "multimarkdown"))
-
-(use-package python-mode
-  :mode "\\.py\\'")
 
 (use-package rust-mode
   :mode "\\.rs\\'"

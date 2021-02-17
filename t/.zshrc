@@ -65,6 +65,7 @@ hash -d projects=$HOME/projects
 # Always work in a virtual environment by default for Python.
 source $HOME/.virtualenvs/39/bin/activate
 export PYTHONBREAKPOINT='ipdb.set_trace'
+export PYTHONSTARTUP=~/bin/pystrt.py
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk13/Contents/Home
 
