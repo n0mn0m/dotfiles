@@ -1,0 +1,32 @@
+[user]
+  name = Alexander Hagerman
+  email = contact@burningdaylight.io
+  signingkey = EB589747BCEE2FD1
+
+[help]
+  autocorrect = 10
+
+[color]
+  ui = auto
+
+[diff]
+  submodule = log
+
+[core]
+  autocrlf = input
+  excludesFile = ~/.gitignore
+  editor = vim
+
+[init]
+  defaultBranch = main
+
+[commit]
+  gpgsign = true
+
+[alias]
+  change-commits = "!f() { VAR=$1; OLD=$2; NEW=$3; shift 3; git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; }; f"
+  graph = log --graph --decorate --abbrev-commit --pretty=oneline
+  grapha = log --graph --decorate --abbrev-commit --pretty=oneline --all
+  graphl = log --graph --abbrev-commit --decorate --all --format=format:"%C(bold blue)%h%C(reset) \
+  - %C(bold cyan)%aD%C(dim white) \
+  - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)"

@@ -1,1 +1,5 @@
-.emacs.d/
+.env
+.DS_Store
+.wakatime-project
+.idea/
+**/.idea/
