@@ -17,3 +17,4 @@
 bin/eshell
 bin/branch_cleanup.ps1
 bin/pystrt.py
+Documents/gpg-import.md
