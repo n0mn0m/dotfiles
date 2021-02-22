@@ -1,0 +1,89 @@
+#+STARTUP: overview
+#+PROPERTY: header-args :comments yes :results silent
+* Global Emacs Configurations
+  Due to how Emacs handles home and shells I make sure the default directory is always my HOME, and I have a custom script to load zsh as my shell for compatibility.
+
+#+BEGIN_SRC emacs-lisp
+(setq default-directory (getenv "HOME"))
+(setenv "ESHELL" (expand-file-name "~/bin/eshell"))
+#+END_SRC
+
+  Layout config
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(global-display-line-numbers-mode)
+(global-visual-line-mode 1)
+(column-number-mode)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(setq x-stretch-cursor t)
+(global-prettify-symbols-mode +1)
+#+END_SRC
+
+  To prevent errors and confusion make sure everything is setup with utf-8.
+
+#+BEGIN_SRC emacs-lisp
+(set-charset-priority 'unicode)
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+#+END_SRC
+
+  Emacs backups are super handy, but really verbose and can make a directory busy. Instead make sure all backups go to one directory and get garbage collected over time.
+
+#+BEGIN_SRC emacs-lisp
+(defvar --backup-directory (concat (getenv "HOME") "/.emacs.d/backups"))
+(if (not (file-exists-p --backup-directory))
+        (make-directory --backup-directory t))
+
+(custom-set-variables
+    '(backup-directory-alist
+      `(("." . ,(concat user-emacs-directory "backups")))))
+
+(setq make-backup-files t               ; backup of a file the first time it is saved.
+      backup-by-copying t               ; don't clobber symlinks
+      version-control t                 ; version numbers for backup files
+      delete-old-versions t             ; delete excess backup files silently
+      delete-by-moving-to-trash t
+      kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
+      kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
+      auto-save-default t               ; auto-save every buffer that visits a file
+      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
+      auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
+)
+#+END_SRC
+
+  Set my personal prefeneces for default Emacs behaviors
+
+#+BEGIN_SRC emacs-lisp
+(setq-default
+   inhibit-startup-screen t
+   initial-scratch-message nil
+   sentence-end-double-space nil
+   ring-bell-function 'ignore
+   use-dialog-box nil
+   mark-even-if-inactive nil
+   case-fold-search nil
+   indent-tabs-mode nil)
+
+(defalias 'yes-or-no-p 'y-or-n-p) ; Accept 'y' in lieu of 'yes'.
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(setq require-final-newline t)
+
+(set-face-attribute 'default nil
+                     :family "JetBrains Mono"
+                     :height 160)
+#+END_SRC
+
+  Customize MacOS keyboad behavior
+
+#+BEGIN_SRC emacs-lisp
+(setq mac-command-modifier 'meta
+  mac-option-modifier 'super
+  mac-control-modifier 'control
+  ns-function-modifier 'hyper)
+#+END_SRC

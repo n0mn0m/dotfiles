@@ -1,0 +1,89 @@
+#+STARTUP: overview 
+#+PROPERTY: header-args :comments yes :results silent
+* Org Configurations
+
+#+BEGIN_SRC emacs-lisp
+(setq sentence-end-double-space nil)
+(setq-default org-display-custom-times t)
+(setq org-time-stamp-custom-formats '("<%Y %b %d>" . "<%Y %b %d %Y %H:%M>"))
+(defvar my-org-journal-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/")
+(defvar formatted-today (format-time-string "%Y%m%d"))
+(defvar todays-journal (concat my-org-journal-dir formatted-today ".org"))
+
+(use-package org
+  :hook ((org-mode . visual-line-mode))
+  :custom
+  (org-directory my-org-journal-dir)
+  (org-default-notes-file (concat org-directory "/notes.org"))
+  (org-return-follows-link t)
+  :config
+  (defun org-mode-insert-code ()
+    "Like markdown-insert-code, but for org instead."
+    (interactive)
+    (org-emphasize ?~))
+  (defun tufte-css-numeralify (with-underscores)
+    "Express the provided underscore-grouped numeral quantity in old-style capitals."
+    ;; e.g. 10_000_000 becomes 10,000,000 (except fancy in the browser)
+    (format
+     "@@html:<span class=\"numeral\">%s</span>@@"
+     (replace-regexp-in-string "_" "," with-underscores)))
+  :init
+  (setq org-capture-templates
+	'(("t" "Todo" entry
+	   (file+headline todays-journal "Tasks")
+	   "* TODO %?\n  %i\n  %a")
+          ("e" "Weekly Status" entry
+	   (file+datetree todays-journal)
+           (file "~/.emacs.d/org-templates/weekly-status.org"))
+          ("i" "Interview" entry
+	   (file+datetree todays-journal)
+           (file "~/.emacs.d/org-templates/interview.org"))
+          ("p" "Code Review" entry
+	   (file+datetree todays-journal)
+           (file "~/.emacs.d/org-templates/pr-review.org"))
+          ("s" "New Service" entry
+	   (file+datetree todays-journal)
+           (file "~/.emacs.d/org-templates/new-service.org"))
+	  ("j" "Journal" entry (file+datetree todays-journal)
+	   "* %?\nEntered on %U\n  %i\n  %a")))
+  (setq org-todo-keywords
+        '((sequence "TODO(t)"
+                    "STARTED(s)"
+                    "WAITING(w)"
+                    "SOMEDAY(.)"
+                    "MAYBE(m)" "|" "DONE(x!)"
+		    "QUESTION(q)"
+                    "CANCELLED(c)")))
+  (add-hook 'org-mode-hook
+	 (lambda ()
+	   (push '("TODO"  . ?▲) prettify-symbols-alist)
+	   (push '("STARTED"  . ?⛿) prettify-symbols-alist)
+	   (push '("WAITING"  . ?♾) prettify-symbols-alist)
+	   (push '("SOMEDAY"  . ?☁) prettify-symbols-alist)
+	   (push '("MAYBE"  . ?♢) prettify-symbols-alist)
+	   (push '("DONE"  . ?✓) prettify-symbols-alist)
+	   (push '("CANCELLED"  . ?✘) prettify-symbols-alist)
+	   (push '("QUESTION"  . ?⚑) prettify-symbols-alist))))
+
+(use-package org-cliplink
+  :bind ("C-x p i" . org-cliplink))
+
+(use-package org-journal
+  :config
+  (setq org-journal-file-format "%Y%m%d.org")
+  (setq org-journal-date-prefix "#+TITLE: Daily Notes ")
+  (setq org-journal-dir my-org-journal-dir))
+
+(define-key global-map (kbd "C-c j t")
+  (lambda () (interactive) (org-capture nil "t")))
+(define-key global-map (kbd "C-c j i")
+  (lambda () (interactive) (org-capture nil "i")))
+(define-key global-map (kbd "C-c j e")
+  (lambda () (interactive) (org-capture nil "e")))
+(define-key global-map (kbd "C-c j j")
+  (lambda () (interactive) (org-capture nil "j")))
+(define-key global-map (kbd "C-c j p")
+  (lambda () (interactive) (org-capture nil "p")))
+(define-key global-map (kbd "C-c j s")
+  (lambda () (interactive) (org-capture nil "s")))
+#+END_SRC

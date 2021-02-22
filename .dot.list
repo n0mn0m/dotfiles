@@ -1,9 +1,14 @@
 .aliasrc
 .dot.list
 .emacs.d/init.el
-.emacs.d/cust
-.emacs.d/lisp
-.emacs.d/org-templates
+.emacs.d/cust/global-config.org
+.emacs.d/cust/package-config.org
+.emacs.d/cust/org-config.org
+.emacs.d/cust/func-config.org
+.emacs.d/lisp/
+.emacs.d/org-templates/new-service.org
+.emacs.d/org-templates/pr-review.org
+.emacs.d/org-templates/weekly-status.org
 .gitconfig
 .gitignore
 .ideavimrc

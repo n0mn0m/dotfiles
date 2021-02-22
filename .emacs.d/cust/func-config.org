@@ -1,0 +1,23 @@
+#+STARTUP: overview 
+#+PROPERTY: header-args :comments yes :results silent
+
+* Custom functions. 
+  This is loaded by `init.el` after `package-config.org` make sure all pakcages are loaded and available before defining custom interactions.
+
+#+BEGIN_SRC emacs-lisp
+(defun switch-to-scratch-buffer ()
+  "Switch to the current session's scratch buffer."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
+
+(bind-key "C-c a s" 'switch-to-scratch-buffer)
+
+(setq confirm-nonexistent-file-or-buffer nil)
+(defun create-non-existent-directory ()
+  "Check whether a given file's parent directories exist; if they do not, offer to create them."
+  (let ((parent-directory (file-name-directory buffer-file-name)))
+    (when (and (not (file-exists-p parent-directory))
+               (y-or-n-p? (format "Directory `%s' does not exist! Create it?" parent-directory)))
+      (make-directory parent-directory t))))
+(add-to-list 'find-file-not-found-functions #'create-non-existent-directory)
+#+END_SRC
